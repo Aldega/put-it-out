@@ -26,7 +26,7 @@ LEVELS.push(
     medals: [
       { id: 'stovefirst', name: 'Сначала плита', test: G => beforeThrow(G, G.flags.stoveT) },
       { id: 'onelid', name: 'Одной крышкой', test: G => G.nThrows === 1 && G.used.has('lid') },
-      { id: 'towel', name: 'Полотенце не тронуто', secret: true, test: G => !G.burned.has('towel') }
+      { id: 'towel', name: 'Полотенце не тронуто', secret: true, hint: 'Полотенцу лучше остаться чистым', test: G => !G.burned.has('towel') }
     ]
   }
 );

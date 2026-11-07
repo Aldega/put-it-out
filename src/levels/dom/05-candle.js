@@ -25,7 +25,7 @@ LEVELS.push(
     medals: [
       { id: 'windowfirst', name: 'Сначала окно', test: G => beforeThrow(G, G.flags.windowT) },
       { id: 'bed', name: 'Кровать цела', test: G => !G.burned.has('bed') },
-      { id: 'nowater', name: 'Без воды', secret: true, test: G => G.waterThrows === 0 }
+      { id: 'nowater', name: 'Без воды', secret: true, hint: 'Штору можно и не мочить', test: G => G.waterThrows === 0 }
     ]
   }
 );

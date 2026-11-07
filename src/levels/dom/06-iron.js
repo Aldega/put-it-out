@@ -20,7 +20,7 @@ LEVELS.push(
     medals: [
       { id: 'wardrobe', name: 'Шкаф цел', test: G => !G.burned.has('wardrobe') },
       { id: 'fast', name: 'Быстрее 8 секунд', test: G => G.time < 8 },
-      { id: 'quickplug', name: 'Вилка за 2 секунды', secret: true, test: G => G.flags.unplugT != null && G.flags.unplugT < 2 }
+      { id: 'quickplug', name: 'Вилка за 2 секунды', secret: true, hint: 'Быстрее, чем утюг остынет…', test: G => G.flags.unplugT != null && G.flags.unplugT < 2 }
     ]
   }
 );

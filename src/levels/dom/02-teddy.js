@@ -20,7 +20,7 @@ LEVELS.push(
     medals: [
       { id: 'plugfirst', name: 'Сначала вилка', test: G => beforeThrow(G, G.flags.unplugT) },
       { id: 'toys', name: 'Игрушки целы', test: G => !G.burned.has('box') },
-      { id: 'nowater', name: 'Без единой капли', secret: true, test: G => G.waterThrows === 0 }
+      { id: 'nowater', name: 'Без единой капли', secret: true, hint: 'А ведро ли нужно?', test: G => G.waterThrows === 0 }
     ]
   }
 );

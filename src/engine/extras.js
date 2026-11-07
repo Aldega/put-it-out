@@ -2,7 +2,7 @@
 // Уровень может задать:
 //   treasure: { name, acc, x, y, r, near, burnTime, exit: [x, y], draw(G, tr), savedMsg, lostMsg }
 //     ценная вещь (или животное) рядом с огнём. Коснись, чтобы вынести. Если предмет near горит долго, вещь пропадёт.
-//   medals: [{ id, name, secret, test: G => bool }]
+//   medals: [{ id, name, secret, hint, test: G => bool }]  hint: намёк к секретной медали, пока она не получена
 //     медали за умное прохождение. Проверяются при победе и копятся в сохранении, их хочется собрать все.
 
 function initExtras(G) {
@@ -76,7 +76,8 @@ function medalsHtml(res) {
   if (!res.all.length) return '';
   return '<div class="medals">' + res.all.map(m => {
     const now = res.got.includes(m.id), ever = now || res.had.includes(m.id), isNew = res.fresh.includes(m.id);
-    const name = ever || !m.secret ? m.name : 'Секрет';
-    return `<span class="medal ${now ? 'on' : ever ? 'was' : ''} ${isNew ? 'new' : ''}"><i>${now ? '✓' : ever ? '✓' : '?'}</i>${name}</span>`;
+    const name = ever || !m.secret ? m.name : (m.hint ? `Секрет: ${m.hint}` : 'Секрет');
+    const hinted = !ever && m.secret && m.hint;
+    return `<span class="medal ${now ? 'on' : ever ? 'was' : ''} ${isNew ? 'new' : ''} ${hinted ? 'hint' : ''}"><i>${now ? '✓' : ever ? '✓' : '?'}</i>${name}</span>`;
   }).join('') + '</div>';
 }

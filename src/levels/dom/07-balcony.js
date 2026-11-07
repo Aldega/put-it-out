@@ -30,7 +30,7 @@ LEVELS.push(
     medals: [
       { id: 'canfirst', name: 'Сначала баллончик', test: G => beforeThrow(G, G.can.safeT) },
       { id: 'laundry', name: 'Бельё сухое', test: G => !G.burned.has('laundry') && G.soaked === 0 },
-      { id: 'farcan', name: 'Баллончик в дальний угол', secret: true, test: G => G.can.safe && G.can.x > 1150 }
+      { id: 'farcan', name: 'Баллончик в дальний угол', secret: true, hint: 'Чем дальше, тем спокойнее', test: G => G.can.safe && G.can.x > 1150 }
     ]
   }
 );
