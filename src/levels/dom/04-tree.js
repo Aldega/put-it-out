@@ -20,7 +20,7 @@ LEVELS.push(
     medals: [
       { id: 'midnight', name: 'До полуночи', test: G => G.time < 8 },
       { id: 'gifts', name: 'Подарки целы', test: G => !G.burned.has('gifts') },
-      { id: 'puppyfirst', name: 'Сначала щенок', secret: true, test: G => beforeThrow(G, G.tr.savedT) }
+      { id: 'puppyfirst', name: 'Сначала щенок', secret: true, hint: 'Кто-то важнее подарков', test: G => beforeThrow(G, G.tr.savedT) }
     ]
   }
 );

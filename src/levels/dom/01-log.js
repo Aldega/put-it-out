@@ -17,7 +17,7 @@ LEVELS.push(
       savedMsg: 'Кот спасён и убежал в коридор. Сначала люди и животные, потом вещи.',
       lostMsg: 'Кот обжёгся и с воплем убежал. В следующий раз вынеси его сразу.' },
     medals: [
-      { id: 'fireplace', name: 'Камин горит дальше', secret: true, test: G => G.flags.fireplace },
+      { id: 'fireplace', name: 'Камин горит дальше', secret: true, hint: 'Камин тут ни при чём…', test: G => G.flags.fireplace },
       { id: 'sand', name: 'Только песком', test: G => G.used.size === 1 && G.used.has('sand') },
       { id: 'fast', name: 'Быстрее 5 секунд', test: G => G.time < 5 }
     ]

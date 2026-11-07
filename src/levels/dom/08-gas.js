@@ -25,7 +25,7 @@ LEVELS.push(
     medals: [
       { id: 'valvefirst', name: 'Сначала кран', test: G => G.flags.valveT != null && (G.flags.windowT == null || G.flags.valveT <= G.flags.windowT) },
       { id: 'nolight', name: 'Свет не трогал', test: G => !G.flags.lightTouched },
-      { id: 'fast', name: 'Проветрил за 8 секунд', secret: true, test: G => G.time < 8 }
+      { id: 'fast', name: 'Проветрил за 8 секунд', secret: true, hint: 'Свежий воздух не ждёт', test: G => G.time < 8 }
     ]
   }
 );

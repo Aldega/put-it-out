@@ -140,3 +140,4 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
 .panel.tight .bigstars svg:nth-child(2) { width: 8.6cqw; height: 8.6cqw; }
 .panel.tight .score { font-size: 2.8cqw; }
 .panel.tight .lesson { font-size: 1.5cqw; padding: .8cqw 1.4cqw; }
+.medal.hint { font-style: italic; font-weight: 500; color: #5d6372; }
