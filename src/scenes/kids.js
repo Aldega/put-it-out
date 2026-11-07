@@ -86,3 +86,20 @@ function drawBear(it) {
   ctx.restore();
 }
 
+
+// клетка с хомяком на коробке с игрушками
+function drawHamster(G, t) {
+  const x = t.x, y = t.y, scared = t.burn > 0 || t.state === 'flying';
+  rr(x - 50, y + 22, 100, 14, 5); toon('#3fa9f5', 4);
+  ctx.fillStyle = '#ffe9a8'; ctx.fillRect(x - 44, y + 12, 88, 12);
+  // хомяк
+  const hop = scared ? Math.abs(Math.sin(time * 14)) * 8 : 0;
+  ell(x, y + 6 - hop, 24, 18); toon('#e8a860', 4);
+  ell(x + 4, y + 12 - hop, 13, 8); toon('#fff3df', 3);
+  for (const s of [-1, 1]) { circ(x + s * 13, y - 10 - hop, 6); toon('#f1b8a0', 3); }
+  circ(x - 7, y + 1 - hop, 3); ctx.fillStyle = INK; ctx.fill(); circ(x + 9, y + 1 - hop, 3); ctx.fill();
+  // прутья
+  ctx.beginPath(); ctx.moveTo(x - 50, y + 22); ctx.lineTo(x - 50, y - 26); ctx.quadraticCurveTo(x, y - 62, x + 50, y - 26); ctx.lineTo(x + 50, y + 22); ctx.lineWidth = 5; ctx.strokeStyle = INK; ctx.stroke();
+  ctx.lineWidth = 3; for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.moveTo(x + i * 14, y + 22); ctx.lineTo(x + i * 14, y - 30 - (3 - Math.abs(i)) * 5); ctx.stroke(); }
+  rr(x - 10, y - 56, 20, 10, 4); toon('#3fa9f5', 3);
+}
