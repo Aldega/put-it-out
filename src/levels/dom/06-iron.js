@@ -14,7 +14,7 @@ LEVELS.push(
     ],
     links: [['board', 'basket', .14], ['board', 'wardrobe', .1]],
     // кот спит под гладильной доской, на него сыплются искры
-    treasure: { name: 'Кот', acc: 'кота', medal: 'Кот спасён', x: 640, y: 615, r: 60, near: 'board', burnTime: 4, exit: [-100, 620], draw: drawCat,
+    treasure: { name: 'Кот', acc: 'кота', medal: 'Кот спасён', x: 590, y: 618, r: 60, near: 'board', burnTime: 4, exit: [-100, 620], draw: drawCat,
       savedMsg: 'Кот спасён. Он опять спал под гладильной доской!',
       lostMsg: 'Коту на спину упала горящая тряпка. Он цел, но очень обижен.' },
     medals: [

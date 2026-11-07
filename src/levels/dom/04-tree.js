@@ -9,7 +9,7 @@ LEVELS.push(
     hot: [{ x: 1010, y: 470, r: 55, label: G => G.flags.plugged ? LABEL_PLUG : null, tap: G => { G.flags.plugged = false; SFX.unplug(); say('Удлинитель выдернут, гирлянда погасла. Теперь можно лить воду.', 'good'); } }],
     items: [
       { id: 'sofa', name: 'диван', draw: drawSofa, value: 1.6, aimAt: [240, 500], spots: [[150, 520, 70], [240, 515, 70], [330, 520, 70], [170, 425, 60], [320, 425, 60]], box: [50, 410, 440, 620] },
-      { id: 'gifts', name: 'подарки', draw: drawGifts, value: 1, aimAt: [880, 560], spots: [[840, 560, 55], [900, 520, 50], [940, 585, 50]], box: [790, 500, 985, 645] },
+      { id: 'gifts', name: 'подарки', draw: drawGifts, value: 1, aimAt: [870, 520], spots: [[845, 545, 55], [850, 475, 50], [940, 560, 45]], box: [790, 440, 985, 615] },
       { id: 'tree', name: 'ёлку', draw: drawTree, value: 1.2, fire: .45, aimAt: [700, 420], spots: [[700, 260, 50], [670, 360, 60], [730, 380, 50], [690, 470, 70], [760, 480, 50], [640, 540, 60]], box: [540, 170, 860, 600] }
     ],
     links: [['tree', 'gifts', .15], ['tree', 'sofa', .09]],

@@ -26,8 +26,10 @@ function bgLiving(c) {
   rr(835, 270, 410, 30, 8, c); toon('#6b3b1e', 6, c);
   rr(850, 640, 380, 26, 6, c); toon('#9c8a7a', 5, c);
   // решётка с дровами в камине
-  rr(965, 610, 150, 20, 6, c); toon('#5a4a3f', 4, c);
-  rr(975, 590, 130, 24, 12, c); toon('#7a4a2a', 4, c);
+  // решётка на ножках, поднята повыше
+  for (const x of [980, 1090]) { rr(x, 590, 10, 52, 3, c); toon('#5a4a3f', 3, c); }
+  rr(965, 575, 150, 20, 6, c); toon('#5a4a3f', 4, c);
+  rr(975, 555, 130, 24, 12, c); toon('#7a4a2a', 4, c);
   // часы и ваза на полке
   rr(900, 205, 70, 65, 12, c); toon('#8a5a34', 5, c); circ(935, 232, 22, c); toon('#fff6e4', 4, c); c.beginPath(); c.moveTo(935, 232); c.lineTo(935, 218); c.moveTo(935, 232); c.lineTo(946, 238); c.lineWidth = 3; c.stroke();
   c.beginPath(); c.moveTo(1150, 270); c.quadraticCurveTo(1120, 230, 1145, 200); c.lineTo(1175, 200); c.quadraticCurveTo(1200, 230, 1170, 270); c.closePath(); toon('#3fa9f5', 5, c);
