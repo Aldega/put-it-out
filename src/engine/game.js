@@ -61,7 +61,7 @@ function act(p, fromButton) {
   if ((G.cds[id] || 0) > 0) return;
   G.cds[id] = t.cd;
   if (G.firstThrowT === null) G.firstThrowT = G.time;
-  G.used.add(id); if (id === 'water') G.waterThrows++;
+  G.used.add(id); G.nThrows++; if (id === 'water') G.waterThrows++;
   const from = { x: 90, y: 760 };
   const T = .5 + Math.hypot(p.x - from.x, p.y - from.y) / 3000;
   G.throws.push({ id, from, to: p, t: 0, T }); SFX.whoosh();

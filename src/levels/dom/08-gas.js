@@ -13,15 +13,20 @@ LEVELS.push(
     done: G => G.flags.valveClosed && G.gas <= 0,
     notDone: G => G.flags.valveClosed ? (G.flags.windowOpen ? null : 'В кухне ещё полно газа. Открой окно и проветри.') : (G.time > 15 || G.blasted ? 'Газ всё ещё идёт! Перекрой кран на трубе.' : null),
     hot: [
-      { x: 960, y: 380, r: 50, label: G => G.flags.valveClosed ? null : 'Перекрыть газ', tap: G => { G.flags.valveClosed = true; SFX.knob(); say(G.flags.windowOpen ? 'Кран перекрыт. Ждём, пока газ выветрится.' : 'Кран перекрыт, газ больше не идёт. Теперь проветри кухню.', 'good'); } },
-      { x: 1030, y: 190, r: 110, label: G => G.flags.windowOpen ? null : 'Открыть окно', tap: G => { G.flags.windowOpen = true; SFX.creak(); say('Окно открыто, газ выветривается.', 'good'); } },
-      { x: 302, y: 340, r: 45, label: G => G.flags.light ? null : 'Включить свет', tap: G => { G.flags.light = true; if (G.gas > 5) gasBlast(G, 'Щелчок выключателя дал искру, и газ взорвался! Когда пахнет газом, свет не включают.'); else say('Свет включён. Газа уже нет, так что это безопасно.', 'good'); } }
+      { x: 960, y: 380, r: 50, label: G => G.flags.valveClosed ? null : 'Перекрыть газ', tap: G => { G.flags.valveClosed = true; G.flags.valveT = G.time; SFX.knob(); say(G.flags.windowOpen ? 'Кран перекрыт. Ждём, пока газ выветрится.' : 'Кран перекрыт, газ больше не идёт. Теперь проветри кухню.', 'good'); } },
+      { x: 1030, y: 190, r: 110, label: G => G.flags.windowOpen ? null : 'Открыть окно', tap: G => { G.flags.windowOpen = true; G.flags.windowT = G.time; SFX.creak(); say('Окно открыто, газ выветривается.', 'good'); } },
+      { x: 302, y: 340, r: 45, label: G => G.flags.light ? null : 'Включить свет', tap: G => { G.flags.light = true; G.flags.lightTouched = true; if (G.gas > 5) gasBlast(G, 'Щелчок выключателя дал искру, и газ взорвался! Когда пахнет газом, свет не включают.'); else say('Свет включён. Газа уже нет, так что это безопасно.', 'good'); } }
     ],
     items: [
       { id: 'curtain', name: 'занавеску', draw: drawCafeCurtain, value: 1.4, aimAt: [1030, 260], spots: [[945, 300, 50], [1030, 305, 50], [1115, 300, 50]], box: [906, 190, 1154, 310] },
       { id: 'towel', name: 'полотенце', draw: drawTowel, value: 1, aimAt: [815, 400], spots: [[815, 440, 50], [815, 380, 40]], box: [784, 320, 846, 450] }
     ],
-    links: [['towel', 'curtain', .13]]
+    links: [['towel', 'curtain', .13]],
+    medals: [
+      { id: 'valvefirst', name: 'Сначала кран', test: G => G.flags.valveT != null && (G.flags.windowT == null || G.flags.valveT <= G.flags.windowT) },
+      { id: 'nolight', name: 'Свет не трогал', test: G => !G.flags.lightTouched },
+      { id: 'fast', name: 'Проветрил за 8 секунд', secret: true, test: G => G.time < 8 }
+    ]
   }
 );
 function gasBlast(G, msg) {

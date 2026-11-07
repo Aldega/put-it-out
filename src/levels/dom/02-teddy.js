@@ -18,7 +18,7 @@ LEVELS.push(
       savedMsg: 'Хомяк в безопасности. Клетку унесли в другую комнату.',
       lostMsg: 'Хомяк надышался дымом. Его откачали, но лучше было вынести клетку сразу.' },
     medals: [
-      { id: 'plugfirst', name: 'Сначала вилка', test: G => G.flags.unplugT != null && (G.firstThrowT === null || G.flags.unplugT <= G.firstThrowT) },
+      { id: 'plugfirst', name: 'Сначала вилка', test: G => beforeThrow(G, G.flags.unplugT) },
       { id: 'toys', name: 'Игрушки целы', test: G => !G.burned.has('box') },
       { id: 'nowater', name: 'Без единой капли', secret: true, test: G => G.waterThrows === 0 }
     ]

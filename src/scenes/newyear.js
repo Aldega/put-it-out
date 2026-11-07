@@ -62,3 +62,20 @@ function drawTreeCord(G) {
   else { cord(712, 600, 870, 668, 20); plugAt(878, 668); }
 }
 
+
+// щенок спит у ёлки
+function drawPuppy(G, t) {
+  const x = t.x, y = t.y, scared = t.burn > 0 || t.state === 'flying';
+  ell(x + 10, y + 8, 46, 24); toon('#f4e3c3', 5);
+  circ(x + 30, y - 2, 12); toon('#c98d4b', 0); ctx.fillStyle = '#c98d4b'; ctx.fill();
+  const hy = y - (scared ? 16 : 4), wag = scared ? Math.sin(time * 25) * 8 : 0;
+  ctx.beginPath(); ctx.moveTo(x + 52, y + 2); ctx.quadraticCurveTo(x + 70, y - 14 + wag, x + 64, y - 24 + wag); ctx.lineWidth = 12; ctx.strokeStyle = INK; ctx.lineCap = 'round'; ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = '#f4e3c3'; ctx.stroke();
+  circ(x - 30, hy, 26); toon('#f4e3c3', 5);
+  for (const s of [-1, 1]) { ell(x - 30 + s * 24, hy + 6, 10, 18, ctx, s * .3); toon('#c98d4b', 4); }
+  ell(x - 30, hy + 12, 12, 8); toon('#fff', 3); circ(x - 30, hy + 8, 4.5); ctx.fillStyle = INK; ctx.fill();
+  ctx.lineWidth = 3.5; ctx.strokeStyle = INK;
+  if (scared) { for (const s of [-1, 1]) { circ(x - 30 + s * 10, hy - 6, 4); ctx.fillStyle = INK; ctx.fill(); } }
+  else { for (const s of [-1, 1]) { ctx.beginPath(); ctx.arc(x - 30 + s * 10, hy - 6, 5, .2, Math.PI - .2); ctx.stroke(); } const z = (time * .6) % 1; ctx.globalAlpha = 1 - z; tex(ctx, x - 8 + z * 20, y - 44 - z * 40, 'z', 22 + z * 10, '#ffffff'); ctx.globalAlpha = 1; }
+  // красный ошейник
+  rr(x - 46, hy + 22, 32, 7, 3); toon('#e63b2e', 3);
+}

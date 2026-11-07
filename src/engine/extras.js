@@ -8,7 +8,7 @@
 function initExtras(G) {
   const T = G.L.treasure;
   G.tr = T ? { ...T, state: 'here', burn: 0, fly: 0 } : null;
-  G.firstThrowT = null; G.waterThrows = 0; G.used = new Set(); G.burned = new Set(); G.soaked = 0;
+  G.firstThrowT = null; G.waterThrows = 0; G.used = new Set(); G.burned = new Set(); G.soaked = 0; G.nThrows = 0;
   for (const it of G.items) if (it.fire > 0) G.burned.add(it.id);
 }
 
@@ -17,7 +17,7 @@ function treasureHot(p) {
   if (t && t.state === 'here' && Math.hypot(p.x - t.x, p.y - t.y) < t.r) return { x: t.x, y: t.y, r: t.r, label: 'Спасти ' + t.acc, h: { tap: saveTreasure } };
   return null;
 }
-function saveTreasure(G) { const t = G.tr; t.state = 'flying'; t.fly = 0; SFX.cloth(); say(t.savedMsg, 'good'); }
+function saveTreasure(G) { const t = G.tr; t.savedT = G.time; t.state = 'flying'; t.fly = 0; SFX.cloth(); say(t.savedMsg, 'good'); }
 
 function tickExtras(G, dt) {
   for (const it of G.items) if (it.fire > 0) G.burned.add(it.id);
@@ -25,7 +25,8 @@ function tickExtras(G, dt) {
   if (t.state === 'here') {
     const it = G.byId[t.near];
     if (it.fire > .3) {
-      if (t.burn === 0) say(`${t.name} в опасности! Коснись, чтобы вынести.`, 'bad');
+      // предупреждаем не сразу, чтобы игрок успел прочитать вступление; знак «!» мигает с самого начала
+      if (!t.warned && G.time > 3) { t.warned = true; say(`${t.name} в опасности! Коснись, чтобы вынести.`, 'bad'); }
       t.burn += dt * it.fire;
       if (t.burn > t.burnTime) { t.state = 'lost'; G.dmg += 10; burst(t.x, t.y, '#6b6b6b', 18, 'steam'); SFX.spread(); say(t.lostMsg, 'bad'); }
     }
@@ -55,6 +56,9 @@ function soakMiss(p) {
   say(`Вода залила ${it.name}, а оно не горело. Мокрая вещь тоже испорчена.`, '');
   return true;
 }
+
+// действие (время t) сделано раньше первого броска
+function beforeThrow(G, t) { return t != null && (G.firstThrowT === null || t <= G.firstThrowT); }
 
 function medalsFor(L) {
   const list = [];

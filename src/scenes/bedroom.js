@@ -50,3 +50,14 @@ function drawBedroomBed(it) {
   rr(965, 580, 22, 46, 5); toon('#8a5a34', 4); rr(1190, 580, 22, 46, 5); toon('#8a5a34', 4);
 }
 
+
+// семейный фотоальбом на тумбочке
+function drawAlbum(G, t) {
+  const x = t.x, y = t.y, scared = t.burn > 0;
+  ctx.save(); ctx.translate(x, y); if (scared) ctx.rotate(Math.sin(time * 20) * .05);
+  rr(-40, -12, 80, 24, 5); toon('#2f7fc1', 5);
+  rr(-40, -26, 80, 18, 5); toon('#3fa9f5', 5);
+  rr(-16, -24, 32, 13, 2); toon('#fff', 3); ell(0, -17, 5, 4); ctx.fillStyle = '#ff7b9c'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-34, 0); ctx.lineTo(34, 0); ctx.lineWidth = 3; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+  ctx.restore();
+}
