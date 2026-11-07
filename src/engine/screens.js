@@ -1,0 +1,50 @@
+// ================== экраны ==================
+let mode = 'title', G = null, time = 0;
+if (!SAVE.owned) SAVE.owned = ['water', 'sand', 'lid'];
+function show(m) {
+  mode = m;
+  $('scrTitle').hidden = m !== 'title'; $('scrMap').hidden = m !== 'map'; $('scrPlay').hidden = m !== 'play'; $('popup').hidden = true;
+  if (m === 'map') renderMap();
+}
+$('btnPlay').onclick = () => show('map');
+$('mapBack').onclick = () => show('title');
+$('btnPause').onclick = () => { G = null; SFX.silence(); show('map'); };
+$('btnShop').onclick = () => openShop();
+
+const LOCK = '<svg class="lock" viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3" fill="none" stroke="#2a1a12" stroke-width="2.6"/><rect x="4.5" y="10.5" width="15" height="11" rx="2.5" fill="#ffd23f" stroke="#2a1a12" stroke-width="2.2"/><circle cx="12" cy="16" r="1.8" fill="#2a1a12"/></svg>';
+function unlocked(i) { return i === 0 || (SAVE.best[LEVELS[i - 1].id] || 0) > 0; }
+function renderMap() {
+  $('coins').textContent = SAVE.coins;
+  const box = $('nodes'); box.innerHTML = '';
+  let cur = LEVELS.findIndex((l, i) => unlocked(i) && !SAVE.best[l.id]); if (cur < 0) cur = LEVELS.length - 1;
+  MAP.forEach((p, i) => {
+    const lv = LEVELS[i], b = document.createElement('button'); b.className = 'node' + (i === cur ? ' cur' : '');
+    b.style.left = p[0] + '%'; b.style.top = p[1] + '%';
+    const st = lv ? SAVE.best[lv.id] || 0 : 0;
+    if (lv && unlocked(i)) {
+      b.innerHTML = `<span class="n toon">${i + 1}</span><span class="nm">${lv.name}</span><span class="stars">${STAR(st > 0)}${STAR(st > 1)}${STAR(st > 2)}</span>`;
+      b.onclick = () => startLevel(i);
+      b.setAttribute('aria-label', `Уровень ${i + 1}: ${lv.name}`);
+    } else {
+      b.disabled = true; b.setAttribute('aria-label', 'Закрыто: пройди предыдущий уровень');
+      b.innerHTML = LOCK + (lv ? `<span class="nm">${lv.name}</span>` : '');
+    }
+    box.appendChild(b);
+  });
+}
+function openShop() {
+  const P = $('panel');
+  const rows = Object.entries(TOOLS).filter(([, t]) => t.price > 0).map(([id, t]) => {
+    const own = SAVE.owned.includes(id);
+    return `<div class="shopitem"><span class="ball">${t.icon}</span><div class="si"><b>${t.name}</b><span>${t.desc}</span></div>
+      ${own ? '<span class="have">Есть</span>' : `<button class="buy" data-id="${id}" ${SAVE.coins < t.price ? 'disabled' : ''}><i>★</i>${t.price}</button>`}</div>`;
+  }).join('');
+  P.innerHTML = `<span class="ribbon toon">Снаряжение</span>
+    <div class="coins"><i>★</i><span>${SAVE.coins}</span></div>
+    <div class="shoplist">${rows}</div>
+    <div class="prow"><button class="rbtn blue" id="shopClose" aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg></button></div>`;
+  $('popup').hidden = false;
+  P.querySelectorAll('.buy').forEach(b => b.onclick = () => { const t = TOOLS[b.dataset.id]; if (SAVE.coins < t.price) return; SAVE.coins -= t.price; SAVE.owned.push(b.dataset.id); store(); SFX.win(); renderMap(); openShop(); });
+  $('shopClose').onclick = () => { $('popup').hidden = true; };
+}
+

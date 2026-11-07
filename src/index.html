@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Как это потушить</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;900&display=swap">
+<style>
+/*@STYLE*/
+</style>
+</head>
+</head>
+<body>
+
+<div class="game" id="game">
+  <canvas id="cv"></canvas>
+
+  <div class="screen" id="scrTitle">
+    <div class="logo"><span class="l1 toon">Как это</span><span class="l2 toon">ПОТУШИТЬ</span></div>
+    <button class="rbtn green play" id="btnPlay" aria-label="Играть"><svg viewBox="0 0 24 24"><path d="M8 4.5v15l12-7.5z" fill="#fff" stroke="#2a1a12" stroke-width="2.2" stroke-linejoin="round"/></svg></button>
+    <span class="tagline">Выбери, чем тушить, и целься пальцем</span>
+  </div>
+
+  <div class="screen" id="scrMap" hidden>
+    <div class="topbar">
+      <button class="rbtn blue" id="mapBack" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <span class="ribbon toon">Эпизод 1 · Дома</span>
+      <span class="mapright"><span class="coins"><i>★</i><span id="coins">0</span></span><button class="rbtn green" id="btnShop" aria-label="Снаряжение"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1.5 12h-11z" fill="#fff" stroke="#2a1a12" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8a3 3 0 0 1 6 0" fill="none" stroke="#2a1a12" stroke-width="2"/></svg></button></span>
+    </div>
+    <div id="nodes"></div>
+  </div>
+
+  <div class="screen" id="scrPlay" hidden>
+    <div class="topbar">
+      <button class="rbtn" id="btnPause" aria-label="К карте"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="5" height="16" rx="1.5" fill="#fff" stroke="#2a1a12" stroke-width="1.8"/><rect x="14" y="4" width="5" height="16" rx="1.5" fill="#fff" stroke="#2a1a12" stroke-width="1.8"/></svg></button>
+      <div class="meterbox"><div class="meter"><i id="meter"></i><span id="meterLbl">Ущерб</span></div></div>
+      <span class="timer" id="timer">0.0 с</span>
+    </div>
+    <div class="bubble" id="bubble">Нажми средство или коснись огня</div>
+    <div class="tray" id="tray"></div>
+  </div>
+
+  <div class="popup" id="popup" hidden><div class="panel" id="panel"></div></div>
+  <div class="flash" id="flash"></div>
+  <button class="rbtn blue mute" id="btnMute" aria-label="Звук"></button>
+</div>
+<p class="rotate">Поверните телефон горизонтально, так играть удобнее</p>
+
+<script>
+/*@SCRIPT*/
+</script>
+</body>
+</html>
