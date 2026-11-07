@@ -5,7 +5,7 @@ function frame(now) {
   if (!cv.width) { requestAnimationFrame(frame); return; }
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   if (mode === 'title' || mode === 'map') {
-    cachedBg(mode, mode === 'title' ? bgTitle : bgMap);
+    cachedBg(mode === 'map' ? 'map' + curEp : mode, mode === 'title' ? bgTitle : bgMap);
     for (const c of clouds) { c[0] += dt * 14 * c[2]; if (c[0] > VW + 120) c[0] = -120; cloud(ctx, c[0], c[1], c[2]); }
     if (mode === 'title') { // дымок из трубы каланчи и мигалка
       ctx.fillStyle = Math.sin(time * 8) > 0 ? '#3fa9f5' : '#e63b2e'; circ(1006, 513, 8); ctx.fill();
@@ -18,7 +18,7 @@ function frame(now) {
     if (G.L.front) G.L.front(G);
     drawTreasure(G);
     for (const it of G.items) glow(it);
-    for (const it of G.items) drawFire(it, time);
+    for (const it of G.items) if (!it.noFlame) drawFire(it, time);
     drawParts(dt); drawThrows(); drawAim();
     G.time = G.time; G.timeAnim = time;
   }

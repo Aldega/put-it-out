@@ -51,10 +51,14 @@ function bgTitle(c) {
   rr(tx + 175, ty - 122, 22, 12, 4, c); toon('#3fa9f5', 3, c);
 }
 function bgMap(c) {
-  hills(c);
+  const E = EPISODES[curEp];
+  E.bg(c);
   // дорожка
   c.save(); c.setLineDash([2, 26]); c.lineCap = 'round'; c.lineWidth = 16; c.strokeStyle = '#fff6e4';
-  c.beginPath(); MAP.forEach((p, i) => { const x = p[0] * VW / 100, y = p[1] * VH / 100; i ? c.lineTo(x, y) : c.moveTo(x, y); }); c.stroke(); c.restore();
+  c.beginPath(); E.map.forEach((p, i) => { const x = p[0] * VW / 100, y = p[1] * VH / 100; i ? c.lineTo(x, y) : c.moveTo(x, y); }); c.stroke(); c.restore();
+}
+function mapDom(c) {
+  hills(c);
   house(c, 70, 640, .8, '#ffd6a5'); house(c, 1210, 300, .6, '#bde0fe');
   for (let i = 0; i < 5; i++) { const x = 300 + i * 220, y = 690 - (i % 2) * 20; c.beginPath(); c.arc(x, y, 30, Math.PI, 0); c.closePath(); toon('#5aa832', 4, c); }
 }

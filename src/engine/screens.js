@@ -1,12 +1,14 @@
 // ================== экраны ==================
-let mode = 'title', G = null, time = 0;
+let mode = 'title', G = null, time = 0, curEp = 0;
 if (!SAVE.owned) SAVE.owned = ['water', 'sand', 'lid'];
 function show(m) {
   mode = m;
   $('scrTitle').hidden = m !== 'title'; $('scrMap').hidden = m !== 'map'; $('scrPlay').hidden = m !== 'play'; $('popup').hidden = true;
   if (m === 'map') renderMap();
 }
-$('btnPlay').onclick = () => show('map');
+$('btnPlay').onclick = () => { const i = LEVELS.findIndex((l, i) => unlocked(i) && !SAVE.best[l.id]); curEp = i < 0 ? EPISODES.length - 1 : LEVELS[i].ep; show('map'); };
+$('epPrev').onclick = () => { if (curEp > 0) { curEp--; SFX.click(); renderMap(); } };
+$('epNext').onclick = () => { if (curEp < EPISODES.length - 1) { curEp++; SFX.click(); renderMap(); } };
 $('mapBack').onclick = () => show('title');
 $('btnPause').onclick = () => { G = null; SFX.silence(); show('map'); };
 $('btnShop').onclick = () => openShop();
@@ -15,18 +17,21 @@ const LOCK = '<svg class="lock" viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 1
 function unlocked(i) { return i === 0 || (SAVE.best[LEVELS[i - 1].id] || 0) > 0; }
 function renderMap() {
   $('coins').textContent = SAVE.coins;
+  const E = EPISODES[curEp];
+  $('epTitle').textContent = `Эпизод ${curEp + 1} · ${E.name}`;
+  $('epPrev').hidden = curEp === 0; $('epNext').hidden = curEp === EPISODES.length - 1;
   const box = $('nodes'); box.innerHTML = '';
   let cur = LEVELS.findIndex((l, i) => unlocked(i) && !SAVE.best[l.id]); if (cur < 0) cur = LEVELS.length - 1;
-  MAP.forEach((p, i) => {
-    const lv = LEVELS[i], b = document.createElement('button'); b.className = 'node' + (i === cur ? ' cur' : '');
+  E.map.forEach((p, k) => {
+    const i = E.from + k, lv = i < E.to ? LEVELS[i] : null, b = document.createElement('button'); b.className = 'node' + (i === cur ? ' cur' : '');
     b.style.left = p[0] + '%'; b.style.top = p[1] + '%';
     const st = lv ? SAVE.best[lv.id] || 0 : 0;
     if (lv && unlocked(i)) {
-      b.innerHTML = `<span class="n toon">${i + 1}</span><span class="nm">${lv.name}</span><span class="stars">${STAR(st > 0)}${STAR(st > 1)}${STAR(st > 2)}</span>`;
+      b.innerHTML = `<span class="n toon">${k + 1}</span><span class="nm">${lv.name}</span><span class="stars">${STAR(st > 0)}${STAR(st > 1)}${STAR(st > 2)}</span>`;
       b.onclick = () => startLevel(i);
-      b.setAttribute('aria-label', `Уровень ${i + 1}: ${lv.name}`);
+      b.setAttribute('aria-label', `Уровень ${k + 1}: ${lv.name}`);
     } else {
-      b.disabled = true; b.setAttribute('aria-label', 'Закрыто: пройди предыдущий уровень');
+      b.disabled = true; b.setAttribute('aria-label', k === 0 ? 'Закрыто: пройди прошлый эпизод' : 'Закрыто: пройди предыдущий уровень');
       b.innerHTML = LOCK + (lv ? `<span class="nm">${lv.name}</span>` : '');
     }
     box.appendChild(b);

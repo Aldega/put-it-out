@@ -85,6 +85,9 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
 .tool:hover .ball { transform: translateY(-.6cqw); }
 
 
+.epnav { position: absolute; top: 50%; transform: translateY(-50%); width: 5.6cqw; height: 5.6cqw; }
+.epnav:hover { transform: translateY(-50%) scale(1.08); }
+.epnav.prev { left: 1.5cqw; } .epnav.next { right: 1.5cqw; }
 .mapright { display: flex; align-items: center; gap: 1.2cqw; }
 .node .nm { opacity: 0; transition: opacity .15s; pointer-events: none; }
 .node:hover .nm, .node:focus-visible .nm, .node.cur .nm { opacity: 1; }
