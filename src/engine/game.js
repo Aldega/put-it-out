@@ -5,7 +5,9 @@ function startLevel(i) {
     flags: { ...(L.flags || {}) }, gas: L.gas || 0, can: L.can ? { ...L.can, heat: 0 } : null,
     items: L.items.map(d => ({ ...d, cls: d.cls || 'A', fire: d.fire || 0, heat: 0, char: 0, wet: 0 })) };
   G.byId = Object.fromEntries(G.items.map(it => [it.id, it]));
+  curEp = L.ep || 0;
   initExtras(G);
+  if (L.init) L.init(G);
   show('play'); renderTray(); say(L.intro, '');
 }
 function renderTray() {
@@ -80,17 +82,30 @@ function landed(th) {
   if (th.id === 'powder') { burst(p.x, p.y, '#ffffff', 40, 'grain'); for (let i = 0; i < 14; i++) G.parts.push({ k: 'puff', x: p.x + (Math.random() - .5) * 160, y: p.y + (Math.random() - .5) * 90, vx: (Math.random() - .5) * 60, vy: -20 - Math.random() * 30, life: 0, max: 1.6, r: 30 + Math.random() * 30 }); SFX.puff(); }
   if (th.id === 'lid') { G.parts.push({ k: 'lid', x: p.x, y: p.y, life: 0, max: 1.2 }); setTimeout(() => SFX.clank(), 180); }
   if (th.id === 'blanket') { G.parts.push({ k: 'blanket', x: p.x, y: p.y, life: 0, max: 1.3 }); SFX.cloth(); }
-  let hit = false, flare = false, lidOk = false;
+  // уровень может сам обработать попадание (пар на каменке, охлаждение баллона...). true: дальше не считать
+  if (G.L.landed && G.L.landed(G, th, p)) return;
+  let hit = false, flare = false, lidOk = false, spill = false, gasMsg = null;
   for (const it of G.items) {
     let dmin = 1e9; for (const s of it.spots) dmin = Math.min(dmin, Math.hypot(s[0] - p.x, s[1] - 20 - p.y));
     if (dmin > t.radius) continue;
     const fall = 1 - dmin / t.radius * .6;
     let pw = t.power * fall;
+    // струя газа (класс C): обычными бросками её не потушить, решает уровень
+    if (it.cls === 'C') { if (it.fire > 0) gasMsg = G.L.gasHit ? G.L.gasHit(G, it, th.id) : 'Струю газа так не потушить. Перекрой газ!'; continue; }
+    // горящая жидкость (класс B): вода её разбрызгивает, песок и порошок хороши
+    if (it.cls === 'B') { if (th.id === 'water') { if (it.fire > 0) spill = it; continue; } if (th.id === 'sand') pw *= 1.5; if (th.id === 'powder') pw *= 1.3; if (th.id === 'blanket') pw *= 1.2; }
     if (it.cls === 'F') { if (th.id === 'water') { if (it.fire > 0) { flare = it; } continue; } if (th.id === 'blanket') pw *= 1.6; if (th.id === 'sand') pw *= .7; if (th.id === 'powder') pw *= .8; }
     if (th.id === 'lid') { if (it.lidable) { pw = 1.2; lidOk = true; } else pw *= .35; }
     if (it.fire > 0) { hit = true; it.fire = Math.max(0, it.fire - pw); if (it.fire < .05) { it.fire = 0; it.wet = 4; burst(p.x, p.y - 20, '#ffffff', 10, 'steam'); SFX.hiss(); } }
-    if (th.id !== 'lid') { it.heat = Math.max(0, it.heat - .6); it.wet = Math.max(it.wet, th.id === 'water' ? 3 : 2); }
+    if (th.id !== 'lid') { it.heat = Math.max(0, it.heat - .6); it.wet = Math.max(it.wet, th.id === 'water' ? (it.soakTime || 3) : 2); }
   }
+  if (spill) {
+    G.mistakes++; G.dmg += 8; spill.fire = Math.min(1, spill.fire + .35);
+    for (const [a, b] of G.L.links) { const o = a === spill.id ? G.byId[b] : b === spill.id ? G.byId[a] : null; if (o && o.fire === 0 && !o.safe) { o.fire = .2; o.heat = 0; } }
+    const [x0, y0, x1] = spill.box; fireball((x0 + x1) / 2, y0 + 10);
+    say(G.L.spillMsg || 'Вода разбрызгала горящую жидкость, и огонь растёкся во все стороны! Такое тушат песком.', 'bad'); return;
+  }
+  if (gasMsg) { say(gasMsg, 'bad'); return; }
   if (flare) {
     G.mistakes++; G.dmg += 8; flare.fire = Math.min(1, flare.fire + .45);
     const [x0, y0, x1] = flare.box; fireball((x0 + x1) / 2, y0);
@@ -148,9 +163,10 @@ function update(dt) {
     }
   }
   const sb = L.spreadBoost ? L.spreadBoost(G) : 1;
-  for (const [a, b, rate] of L.links) for (const [x, y] of [[a, b], [b, a]]) {
+  // связь [a, b, скорость, обратно]: обратно = множитель скорости от b к a (ветер дует от a к b)
+  for (const [a, b, rate, back = 1] of L.links) for (const [x, y, r] of [[a, b, rate], [b, a, rate * back]]) {
     const A = G.byId[x], B = G.byId[y];
-    if (A.fire > .3 && B.fire === 0 && B.wet <= 0) { B.heat += A.fire * rate * sb * dt; if (B.heat >= 1) { B.fire = .15; B.heat = 0; SFX.spread(); say(`Огонь перекинулся на ${B.name}!`, 'bad'); } }
+    if (A.fire > .3 && B.fire === 0 && B.wet <= 0 && !B.safe && (!L.linkOk || L.linkOk(G, x, y))) { B.heat += A.fire * r * sb * dt; if (B.heat >= 1) { B.fire = .15; B.heat = 0; SFX.spread(); say(`Огонь перекинулся на ${B.name}!`, 'bad'); } }
   }
   if (L.tick) L.tick(G, dt);
   tickExtras(G, dt);

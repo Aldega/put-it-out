@@ -52,6 +52,8 @@ function drawTreasure(G) {
 function soakMiss(p) {
   const it = G.items.find(it => it.fire === 0 && inBox(p, it.box));
   if (!it) return false;
+  // траву и землю вода не портит: мокрое просто не загорится какое-то время
+  if (it.soakFree) { G.wetBreaks = (G.wetBreaks || 0) + 1; say(it.soakMsg || `Ты полил ${it.name}. Пока мокрое, огонь сюда не пройдёт.`, 'good'); return true; }
   const d = 4 * it.value; G.dmg += d; G.soaked += d;
   say(`Вода залила ${it.name}, а оно не горело. Мокрая вещь тоже испорчена.`, '');
   return true;

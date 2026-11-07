@@ -8,7 +8,7 @@ const read = p => readFileSync(join(SRC, p), 'utf8');
 const dir = (d, filter = f => f.endsWith('.js')) => readdirSync(join(SRC, d)).filter(filter).sort().map(f => `${d}/${f}`);
 
 // Эпизоды по порядку. Новый эпизод: создать папку src/levels/<id>/ и добавить её сюда.
-const EPISODES = ['dom'];
+const EPISODES = ['dom', 'dacha'];
 
 const order = [
   'engine/core.js',
@@ -17,8 +17,8 @@ const order = [
   'engine/tools.js',
   'engine/extras.js',
   'levels/registry.js',
-  ...EPISODES.flatMap(ep => dir(`levels/${ep}`, f => /^\d+-.*\.js$/.test(f))),
-  ...EPISODES.flatMap(ep => existsSync(join(SRC, `levels/${ep}/map.js`)) ? [`levels/${ep}/map.js`] : []),
+  // каждый эпизод: сначала его уровни, потом map.js, который их собирает в эпизод
+  ...EPISODES.flatMap(ep => [...dir(`levels/${ep}`, f => /^\d+-.*\.js$/.test(f)), ...(existsSync(join(SRC, `levels/${ep}/map.js`)) ? [`levels/${ep}/map.js`] : [])]),
   'engine/sfx.js',
   'engine/screens.js',
   'engine/game.js',
