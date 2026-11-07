@@ -12,6 +12,15 @@ LEVELS.push(
       { id: 'gifts', name: 'подарки', draw: drawGifts, value: 1, aimAt: [880, 560], spots: [[840, 560, 55], [900, 520, 50], [940, 585, 50]], box: [790, 500, 985, 645] },
       { id: 'tree', name: 'ёлку', draw: drawTree, value: 1.2, fire: .45, aimAt: [700, 420], spots: [[700, 260, 50], [670, 360, 60], [730, 380, 50], [690, 470, 70], [760, 480, 50], [640, 540, 60]], box: [540, 170, 860, 600] }
     ],
-    links: [['tree', 'gifts', .15], ['tree', 'sofa', .09]]
+    links: [['tree', 'gifts', .15], ['tree', 'sofa', .09]],
+    // щенок спит прямо у горящей ёлки
+    treasure: { name: 'Щенок', acc: 'щенка', medal: 'Щенок спасён', x: 470, y: 608, r: 60, near: 'tree', burnTime: 4, exit: [-100, 600], draw: drawPuppy,
+      savedMsg: 'Щенок спасён и спрятался под диваном в коридоре.',
+      lostMsg: 'Щенок испугался дыма и забился в угол. Его нужно было вынести сразу.' },
+    medals: [
+      { id: 'midnight', name: 'До полуночи', test: G => G.time < 8 },
+      { id: 'gifts', name: 'Подарки целы', test: G => !G.burned.has('gifts') },
+      { id: 'puppyfirst', name: 'Сначала щенок', secret: true, test: G => beforeThrow(G, G.tr.savedT) }
+    ]
   }
 );

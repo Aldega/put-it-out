@@ -52,3 +52,17 @@ function drawCan(G) {
   if (!c.safe) { const t = (time * 2) % 1; ctx.save(); ctx.globalAlpha = 1 - t; circ(c.x, c.y - 30, 40 + t * 30); ctx.lineWidth = 4; ctx.strokeStyle = '#ffffff'; ctx.stroke(); ctx.restore(); }
 }
 
+
+// гнездо с птенцами на перилах
+function drawNest(G, t) {
+  const x = t.x, y = t.y, scared = t.burn > 0 || t.state === 'flying';
+  for (const [dx, op] of [[-14, 0], [0, 1], [14, 2]]) {
+    const hop = scared ? Math.abs(Math.sin(time * 16 + op)) * 8 : 0, hy = y - 10 - hop;
+    circ(x + dx, hy, 11); toon('#bfc6cf', 4);
+    ctx.beginPath(); ctx.moveTo(x + dx - 5, hy - 2); ctx.lineTo(x + dx, hy - (scared ? 18 : 10)); ctx.lineTo(x + dx + 5, hy - 2); ctx.closePath(); toon('#ffb13b', 3);
+    circ(x + dx - 4, hy - 4, 2); ctx.fillStyle = INK; ctx.fill(); circ(x + dx + 4, hy - 4, 2); ctx.fill();
+  }
+  ell(x, y + 6, 36, 14); toon('#a8763e', 5);
+  ctx.lineWidth = 3; ctx.strokeStyle = '#6e4a22';
+  for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(x - 30 + i * 4, y + 2 + i); ctx.lineTo(x + 30 + i * 3, y + 10 - i); ctx.stroke(); }
+}

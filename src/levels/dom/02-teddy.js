@@ -6,12 +6,21 @@ LEVELS.push(
     back: G => drawHeater(G),
     boost: (G, it) => it.id === 'bear' && G.flags.plugged ? 1.6 : 1,
     live: [shockZone([620, 380, 910, 700], [760, 540], 'bear')],
-    hot: [{ x: 928, y: 482, r: 55, label: G => G.flags.plugged ? LABEL_PLUG : null, tap: G => { G.flags.plugged = false; SFX.unplug(); say('Вилка выдернута. Обогреватель обесточен, теперь вода безопасна.', 'good'); } }],
+    hot: [{ x: 928, y: 482, r: 55, label: G => G.flags.plugged ? LABEL_PLUG : null, tap: G => { G.flags.plugged = false; G.flags.unplugT = G.time; SFX.unplug(); say('Вилка выдернута. Обогреватель обесточен, теперь вода безопасна.', 'good'); } }],
     items: [
       { id: 'bed', name: 'кровать', draw: drawBed, value: 1.6, aimAt: [240, 470], spots: [[180, 480, 60], [250, 470, 70], [320, 480, 60], [100, 445, 50]], box: [30, 430, 350, 610] },
       { id: 'box', name: 'коробку', draw: drawToybox, value: 1, aimAt: [420, 520], spots: [[360, 535, 60], [425, 505, 60], [485, 530, 50]], box: [310, 480, 515, 660] },
       { id: 'bear', name: 'медведя', draw: drawBear, value: 1, fire: .5, aimAt: [640, 520], spots: [[600, 410, 70], [560, 540, 60], [640, 545, 60], [680, 525, 50], [600, 630, 70]], box: [500, 395, 720, 675] }
     ],
-    links: [['bear', 'box', .15], ['box', 'bed', .13]]
+    links: [['bear', 'box', .15], ['box', 'bed', .13]],
+    // клетка с хомяком стоит на коробке с игрушками, рядом с медведем
+    treasure: { name: 'Хомяк', acc: 'хомяка', medal: 'Хомяк спасён', x: 412, y: 440, r: 60, near: 'box', burnTime: 2.5, exit: [-80, 560], draw: drawHamster,
+      savedMsg: 'Хомяк в безопасности. Клетку унесли в другую комнату.',
+      lostMsg: 'Хомяк надышался дымом. Его откачали, но лучше было вынести клетку сразу.' },
+    medals: [
+      { id: 'plugfirst', name: 'Сначала вилка', test: G => beforeThrow(G, G.flags.unplugT) },
+      { id: 'toys', name: 'Игрушки целы', test: G => !G.burned.has('box') },
+      { id: 'nowater', name: 'Без единой капли', secret: true, test: G => G.waterThrows === 0 }
+    ]
   }
 );

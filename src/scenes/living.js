@@ -66,3 +66,21 @@ function drawLog(it) {
   ctx.beginPath(); ctx.moveTo(560, 590); ctx.lineTo(545, 562); ctx.lineWidth = 10; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 5; ctx.strokeStyle = bark; ctx.stroke();
 }
 
+
+// кот спит на ковре; когда рядом огонь, просыпается
+function drawCat(G, t) {
+  const x = t.x, y = t.y, scared = t.burn > 0 || t.state === 'flying';
+  // хвост
+  ctx.beginPath(); ctx.moveTo(x + 40, y + 12); ctx.quadraticCurveTo(x + 80, y + 10, x + 70, y - 18); ctx.lineWidth = 16; ctx.strokeStyle = INK; ctx.lineCap = 'round'; ctx.stroke(); ctx.lineWidth = 9; ctx.strokeStyle = '#f39a3d'; ctx.stroke();
+  ell(x + 8, y + 6, 48, 26); toon('#f39a3d', 5);
+  ctx.beginPath(); ctx.moveTo(x - 4, y - 18); ctx.lineTo(x + 6, y + 30); ctx.moveTo(x + 18, y - 18); ctx.lineTo(x + 26, y + 30); ctx.lineWidth = 5; ctx.strokeStyle = '#d97a22'; ctx.stroke();
+  // голова и уши
+  const hy = y - (scared ? 14 : 2);
+  for (const s of [-1, 1]) { ctx.beginPath(); ctx.moveTo(x - 34 + s * 14, hy - 14); ctx.lineTo(x - 34 + s * 22, hy - 38); ctx.lineTo(x - 34 + s * 2, hy - 22); ctx.closePath(); toon('#f39a3d', 4); }
+  circ(x - 34, hy, 24); toon('#f7b25e', 5);
+  ctx.lineWidth = 3.5; ctx.strokeStyle = INK; ctx.lineCap = 'round';
+  if (scared) { for (const s of [-1, 1]) { circ(x - 34 + s * 9, hy - 3, 6); toon('#ffffff', 3); circ(x - 34 + s * 9, hy - 3, 2.5); ctx.fillStyle = INK; ctx.fill(); } }
+  else { for (const s of [-1, 1]) { ctx.beginPath(); ctx.arc(x - 34 + s * 9, hy - 3, 5, .2, Math.PI - .2); ctx.stroke(); } }
+  circ(x - 34, hy + 6, 3); ctx.fillStyle = '#e8577a'; ctx.fill();
+  if (!scared) { const z = (time * .6) % 1; ctx.globalAlpha = 1 - z; tex(ctx, x - 10 + z * 20, y - 40 - z * 40, 'z', 22 + z * 10, '#ffffff'); ctx.globalAlpha = 1; }
+}

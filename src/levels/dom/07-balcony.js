@@ -14,7 +14,7 @@ LEVELS.push(
     drag: {
       grab: (G, p) => !G.can.gone && !G.can.safe && Math.hypot(p.x - G.can.x, p.y - (G.can.y - 30)) < 60,
       move: (G, p) => { G.can.x = Math.max(290, Math.min(1240, p.x)); G.can.y = Math.max(560, Math.min(700, p.y + 30)); },
-      drop(G) { if (Math.hypot(G.can.x - 595, G.can.y - 590) > 330) { G.can.safe = true; G.can.heat = 0; SFX.knob(); say('Баллончик в безопасности. Теперь туши коробки!', 'good'); } else say('Ещё близко к огню. Оттащи баллончик подальше.', ''); }
+      drop(G) { if (Math.hypot(G.can.x - 595, G.can.y - 590) > 330) { G.can.safe = true; G.can.safeT = G.time; G.can.heat = 0; SFX.knob(); say('Баллончик в безопасности. Теперь туши коробки!', 'good'); } else say('Ещё близко к огню. Оттащи баллончик подальше.', ''); }
     },
     hot: [{ x: 0, y: 0, r: 0, dyn: G => G.can.gone || G.can.safe ? null : { x: G.can.x, y: G.can.y - 30, r: 60, label: 'Тащи подальше' } }],
     items: [
@@ -22,6 +22,15 @@ LEVELS.push(
       { id: 'chair', name: 'стул', draw: drawChair, value: 1, aimAt: [970, 520], spots: [[930, 540, 50], [1010, 540, 50], [970, 425, 60]], box: [880, 400, 1060, 650] },
       { id: 'boxes', name: 'коробки', draw: drawBoxes, value: 1, fire: .5, aimAt: [590, 520], spots: [[500, 540, 55], [560, 460, 60], [620, 460, 50], [690, 560, 50]], box: [470, 440, 720, 650] }
     ],
-    links: [['boxes', 'chair', .12], ['boxes', 'laundry', .11]]
+    links: [['boxes', 'chair', .12], ['boxes', 'laundry', .11]],
+    // гнездо с птенцами на перилах за стулом
+    treasure: { name: 'Гнездо', acc: 'гнездо', medal: 'Птенцы спасены', x: 1100, y: 405, r: 50, near: 'chair', burnTime: 3, exit: [1350, 200], draw: drawNest,
+      savedMsg: 'Гнездо переставили на соседний балкон. Птенцы пищат от радости.',
+      lostMsg: 'Птенцы надышались дымом. Мама-голубь будет искать их долго.' },
+    medals: [
+      { id: 'canfirst', name: 'Сначала баллончик', test: G => beforeThrow(G, G.can.safeT) },
+      { id: 'laundry', name: 'Бельё сухое', test: G => !G.burned.has('laundry') && G.soaked === 0 },
+      { id: 'farcan', name: 'Баллончик в дальний угол', secret: true, test: G => G.can.safe && G.can.x > 1150 }
+    ]
   }
 );

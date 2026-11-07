@@ -15,6 +15,7 @@ const order = [
   'scenes/common.js',
   ...dir('scenes', f => f.endsWith('.js') && f !== 'common.js'),
   'engine/tools.js',
+  'engine/extras.js',
   'levels/registry.js',
   ...EPISODES.flatMap(ep => dir(`levels/${ep}`, f => /^\d+-.*\.js$/.test(f))),
   ...EPISODES.flatMap(ep => existsSync(join(SRC, `levels/${ep}/map.js`)) ? [`levels/${ep}/map.js`] : []),

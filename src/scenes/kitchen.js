@@ -93,3 +93,15 @@ function gasGauge(G) {
   tex(ctx, 130, 131, `Газ ${Math.round(G.gas)}%`, 20, INK);
 }
 
+
+// бабушкина книга рецептов стоит на столешнице
+function drawRecipeBook(G, t) {
+  const x = t.x, y = t.y, scared = t.burn > 0;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(scared ? Math.sin(time * 20) * .05 : -.06);
+  rr(-34, -46, 68, 92, 6); toon('#b5452f', 5);
+  rr(-26, -46, 6, 92, 2); toon('#8a2f1f', 3);
+  rr(-14, -30, 40, 26, 4); toon('#fff3df', 3);
+  tex(ctx, 6, -17, 'РЕЦЕПТЫ', 9, INK);
+  circ(6, 18, 12); toon('#ffd23f', 3); ell(6, 16, 6, 4); ctx.fillStyle = '#b5452f'; ctx.fill();
+  ctx.restore();
+}

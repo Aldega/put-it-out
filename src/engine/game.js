@@ -5,6 +5,7 @@ function startLevel(i) {
     flags: { ...(L.flags || {}) }, gas: L.gas || 0, can: L.can ? { ...L.can, heat: 0 } : null,
     items: L.items.map(d => ({ ...d, cls: d.cls || 'A', fire: d.fire || 0, heat: 0, char: 0, wet: 0 })) };
   G.byId = Object.fromEntries(G.items.map(it => [it.id, it]));
+  initExtras(G);
   show('play'); renderTray(); say(L.intro, '');
 }
 function renderTray() {
@@ -23,6 +24,7 @@ function say(text, kind) { const b = $('bubble'); b.textContent = text; b.classN
 
 // предметы, которых можно коснуться
 function hotAt(p) {
+  const tr = treasureHot(p); if (tr) return tr;
   for (const h of G.L.hot || []) {
     if (h.dyn) { const d = h.dyn(G); if (d && Math.hypot(p.x - d.x, p.y - d.y) < d.r) return { ...d, h }; continue; }
     const label = h.label(G); if (label && Math.hypot(p.x - h.x, p.y - h.y) < h.r) return { x: h.x, y: h.y, r: h.r, label, h };
@@ -58,6 +60,8 @@ function act(p, fromButton) {
   const id = G.tool, t = TOOLS[id];
   if ((G.cds[id] || 0) > 0) return;
   G.cds[id] = t.cd;
+  if (G.firstThrowT === null) G.firstThrowT = G.time;
+  G.used.add(id); G.nThrows++; if (id === 'water') G.waterThrows++;
   const from = { x: 90, y: 760 };
   const T = .5 + Math.hypot(p.x - from.x, p.y - from.y) / 3000;
   G.throws.push({ id, from, to: p, t: 0, T }); SFX.whoosh();
@@ -95,7 +99,7 @@ function landed(th) {
   let decorMsg = null;
   if (th.id !== 'lid') for (const d of G.L.decor || []) if (G.flags[d.flag] && Math.hypot(p.x - d.x, p.y - d.y) < t.radius + d.r * .5) { G.flags[d.flag] = false; burst(d.x, d.y, '#ffffff', 10, 'steam'); SFX.hiss(); decorMsg = d.msg; }
   if (decorMsg && !hit) { say(decorMsg, ''); return; }
-  if (!hit) say('Мимо огня. Целься прямо в пламя.', '');
+  if (!hit) { if (!(th.id === 'water' && soakMiss(p))) say('Мимо огня. Целься прямо в пламя.', ''); }
   else if (th.id === 'lid') say(lidOk ? 'Крышка перекрыла кислород. Так и тушат сковороду!' : 'Крышка маленькая: такой предмет ею не накрыть.', lidOk ? 'good' : 'bad');
   else if (th.id === 'sand') say('Песок сбивает пламя, но медленнее воды.', '');
   else if (th.id === 'blanket') say('Покрывало накрыло огонь и перекрыло воздух.', 'good');
@@ -149,6 +153,7 @@ function update(dt) {
     if (A.fire > .3 && B.fire === 0 && B.wet <= 0) { B.heat += A.fire * rate * sb * dt; if (B.heat >= 1) { B.fire = .15; B.heat = 0; SFX.spread(); say(`Огонь перекинулся на ${B.name}!`, 'bad'); } }
   }
   if (L.tick) L.tick(G, dt);
+  tickExtras(G, dt);
   G.dmg += total * L.dmgRate * dt;
   SFX.fire(total);
   for (const th of G.throws) { th.t += dt; if (th.t >= th.T && !th.done) { th.done = true; landed(th); } }

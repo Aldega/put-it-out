@@ -16,6 +16,7 @@ function frame(now) {
     if (G.L.back) G.L.back(G);
     for (const it of G.items) it.draw(it, G);
     if (G.L.front) G.L.front(G);
+    drawTreasure(G);
     for (const it of G.items) glow(it);
     for (const it of G.items) drawFire(it, time);
     drawParts(dt); drawThrows(); drawAim();

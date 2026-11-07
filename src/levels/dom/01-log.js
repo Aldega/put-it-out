@@ -11,6 +11,15 @@ LEVELS.push(
       { id: 'rug', name: 'ковёр', draw: drawRug, value: 1.2, aimAt: [420, 650], spots: [[330, 662, 60], [420, 672, 70], [520, 678, 60], [690, 678, 60], [790, 672, 70], [870, 662, 60]], box: [270, 618, 930, 702] },
       { id: 'log', name: 'полено', draw: drawLog, value: 1, fire: .55, aimAt: [620, 575], spots: [[500, 592, 60], [565, 588, 70], [630, 588, 70], [695, 592, 60], [748, 596, 50]], box: [470, 560, 780, 655] }
     ],
-    links: [['log', 'rug', .16], ['rug', 'armchair', .12]]
+    links: [['log', 'rug', .16], ['rug', 'armchair', .12]],
+    // кот спит на краю ковра: огонь доберётся до него по ковру
+    treasure: { name: 'Кот', acc: 'кота', medal: 'Кот спасён', x: 860, y: 640, r: 60, near: 'rug', burnTime: 2.5, exit: [1300, 560], draw: drawCat,
+      savedMsg: 'Кот спасён и убежал в коридор. Сначала люди и животные, потом вещи.',
+      lostMsg: 'Кот обжёгся и с воплем убежал. В следующий раз вынеси его сразу.' },
+    medals: [
+      { id: 'fireplace', name: 'Камин горит дальше', secret: true, test: G => G.flags.fireplace },
+      { id: 'sand', name: 'Только песком', test: G => G.used.size === 1 && G.used.has('sand') },
+      { id: 'fast', name: 'Быстрее 5 секунд', test: G => G.time < 5 }
+    ]
   }
 );
