@@ -49,6 +49,8 @@ const SFX = (() => {
     cloth() { noise(.5, 'bandpass', 900, 300, .35, .08, 1.5); tone(90, .3, 'sine', .3, .35, 60); },
     flare() { noise(1, 'lowpass', 300, 3000, .7, .02); tone(70, .8, 'sine', .5, 0, 160); noise(.8, 'highpass', 2000, 5000, .25, .1, 1, .1); },
     blast() { noise(1.4, 'lowpass', 1800, 60, 1, .005); tone(55, 1, 'sine', .8, 0, 30); noise(.4, 'highpass', 2000, 800, .3, .005); },
+    dial() { [0, 1, 2].forEach(i => tone(i === 0 ? 1336 : 1209, .09, 'sine', .18, i * .16)); tone(440, .5, 'sine', .12, .6); tone(480, .5, 'sine', .1, .6); },
+    ding() { tone(1320, .5, 'sine', .25); tone(990, .7, 'sine', .2, .25); },
     lose() { [392, 330, 262, 196].forEach((f, i) => tone(f, .45, 'triangle', .25, i * .22, f * .97)); }
   };
 })();

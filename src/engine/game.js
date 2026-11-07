@@ -100,14 +100,14 @@ function landed(th) {
     if (th.id !== 'lid') { it.heat = Math.max(0, it.heat - .6); it.wet = Math.max(it.wet, th.id === 'water' ? (it.soakTime || 3) : 2); }
   }
   if (spill) {
-    G.mistakes++; G.dmg += 8; spill.fire = Math.min(1, spill.fire + .35);
+    G.spills = (G.spills || 0) + 1; G.mistakes++; G.dmg += 8; spill.fire = Math.min(1, spill.fire + .35);
     for (const [a, b] of G.L.links) { const o = a === spill.id ? G.byId[b] : b === spill.id ? G.byId[a] : null; if (o && o.fire === 0 && !o.safe) { o.fire = .2; o.heat = 0; } }
     const [x0, y0, x1] = spill.box; fireball((x0 + x1) / 2, y0 + 10);
     say(G.L.spillMsg || 'Вода разбрызгала горящую жидкость, и огонь растёкся во все стороны! Такое тушат песком.', 'bad'); return;
   }
   if (gasMsg) { say(gasMsg, 'bad'); return; }
   if (flare) {
-    G.mistakes++; G.dmg += 8; flare.fire = Math.min(1, flare.fire + .45);
+    G.flares = (G.flares || 0) + 1; G.mistakes++; G.dmg += 8; flare.fire = Math.min(1, flare.fire + .45);
     const [x0, y0, x1] = flare.box; fireball((x0 + x1) / 2, y0);
     say('Вода в горящем масле вскипела, и масло выплеснулось огненным шаром! Масло тушат крышкой или покрывалом.', 'bad'); return;
   }
@@ -115,7 +115,7 @@ function landed(th) {
   if (th.id !== 'lid') for (const d of G.L.decor || []) if (G.flags[d.flag] && Math.hypot(p.x - d.x, p.y - d.y) < t.radius + d.r * .5) { G.flags[d.flag] = false; burst(d.x, d.y, '#ffffff', 10, 'steam'); SFX.hiss(); decorMsg = d.msg; }
   if (decorMsg && !hit) { say(decorMsg, ''); return; }
   if (!hit) { if (!(th.id === 'water' && soakMiss(p))) say('Мимо огня. Целься прямо в пламя.', ''); }
-  else if (th.id === 'lid') say(lidOk ? 'Крышка перекрыла кислород. Так и тушат сковороду!' : 'Крышка маленькая: такой предмет ею не накрыть.', lidOk ? 'good' : 'bad');
+  else if (th.id === 'lid') say(lidOk ? (G.L.lidMsg || 'Крышка перекрыла кислород. Так и тушат сковороду!') : 'Крышка маленькая: такой предмет ею не накрыть.', lidOk ? 'good' : 'bad');
   else if (th.id === 'sand') say('Песок сбивает пламя, но медленнее воды.', '');
   else if (th.id === 'blanket') say('Покрывало накрыло огонь и перекрыло воздух.', 'good');
   else if (th.id === 'powder') say('Порошок мгновенно сбивает пламя.', 'good');
