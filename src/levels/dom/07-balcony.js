@@ -1,6 +1,6 @@
 LEVELS.push(
   {
-    id: 'balcony', name: 'Балкон с хламом', bg: bgBalcony, dmgRate: 1.9, par: 12, reward: 90, can: { x: 760, y: 640 },
+    id: 'balcony', name: 'Балкон с хламом', bg: bgBalcony, dmgRate: 1.9, par: 12, reward: 90, can: { x: 395, y: 650 },
     intro: 'На балкон бросили окурок, загорелись старые коробки. Рядом стоит баллончик с краской, он нагревается!',
     lesson: 'Баллончики с краской, лаком и дезодорантом от жара взрываются, как маленькие бомбы. Первым делом убери их подальше от огня, потом туши коробки водой. И не храни хлам на балконе: одного окурка хватает для пожара.',
     front: G => drawCan(G),
@@ -13,7 +13,7 @@ LEVELS.push(
     },
     drag: {
       grab: (G, p) => !G.can.gone && !G.can.safe && Math.hypot(p.x - G.can.x, p.y - (G.can.y - 30)) < 60,
-      move: (G, p) => { G.can.x = Math.max(290, Math.min(1240, p.x)); G.can.y = Math.max(560, Math.min(700, p.y + 30)); },
+      move: (G, p) => { G.can.x = Math.max(120, Math.min(1240, p.x)); G.can.y = Math.max(560, Math.min(700, p.y + 30)); },
       drop(G) { if (Math.hypot(G.can.x - 595, G.can.y - 590) > 330) { G.can.safe = true; G.can.safeT = G.time; G.can.heat = 0; SFX.knob(); say('Баллончик в безопасности. Теперь туши коробки!', 'good'); } else say('Ещё близко к огню. Оттащи баллончик подальше.', ''); }
     },
     hot: [{ x: 0, y: 0, r: 0, dyn: G => G.can.gone || G.can.safe ? null : { x: G.can.x, y: G.can.y - 30, r: 60, label: 'Тащи подальше' } }],
@@ -30,7 +30,7 @@ LEVELS.push(
     medals: [
       { id: 'canfirst', name: 'Сначала баллончик', test: G => beforeThrow(G, G.can.safeT) },
       { id: 'laundry', name: 'Бельё сухое', test: G => !G.burned.has('laundry') && G.soaked === 0 },
-      { id: 'farcan', name: 'Баллончик в дальний угол', secret: true, hint: 'Чем дальше, тем спокойнее', test: G => G.can.safe && G.can.x > 1150 }
+      { id: 'farcan', name: 'Баллончик в дальний угол', secret: true, hint: 'Чем дальше, тем спокойнее', test: G => G.can.safe && (G.can.x > 1150 || G.can.x < 200) }
     ]
   }
 );

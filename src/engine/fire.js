@@ -35,7 +35,7 @@ function glow(it) {
   ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
 }
 function fireplaceFire(t) {
-  for (let i = 0; i < 3; i++) tongue(1000 + i * 40, 595, 55 + 10 * Math.sin(t * 8 + i), 40, 6 * Math.sin(t * 6 + i * 2), FIRE_COLS);
+  for (let i = 0; i < 3; i++) tongue(1000 + i * 40, 560, 55 + 10 * Math.sin(t * 8 + i), 40, 6 * Math.sin(t * 6 + i * 2), FIRE_COLS);
 }
 
 function drawBolt(x0, y0, x1, y1, w) {

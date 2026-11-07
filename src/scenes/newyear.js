@@ -31,7 +31,7 @@ function drawSofa(it) {
 }
 function drawGifts(it) {
   const k = it.char;
-  [[800, 560, 90, 80, '#3fa9f5', '#ffd23f'], [900, 585, 80, 55, '#7cc243', '#e63b2e'], [860, 515, 60, 48, '#ff7b9c', '#ffffff']].forEach(([x, y, w, h, a, b]) => {
+  [[790, 530, 110, 85, '#3fa9f5', '#ffd23f'], [905, 555, 75, 60, '#7cc243', '#e63b2e'], [812, 470, 72, 58, '#ff7b9c', '#ffffff'], [915, 505, 50, 48, '#ffd23f', '#e63b2e']].forEach(([x, y, w, h, a, b]) => {
     rr(x, y, w, h, 5); toon(mix(a, '#2a1a12', k * .8), 5);
     ctx.fillStyle = mix(b, '#2a1a12', k * .8); ctx.fillRect(x + w / 2 - 6, y, 12, h); ctx.fillRect(x, y + h / 2 - 6, w, 12);
     ctx.beginPath(); ctx.ellipse(x + w / 2 - 12, y - 6, 12, 7, -.5, 0, 7); toon(mix(b, '#2a1a12', k * .8), 3); ctx.beginPath(); ctx.ellipse(x + w / 2 + 12, y - 6, 12, 7, .5, 0, 7); toon(mix(b, '#2a1a12', k * .8), 3);
