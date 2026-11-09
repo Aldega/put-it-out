@@ -8,14 +8,21 @@ function startLevel(i) {
   curEp = L.ep || 0;
   initExtras(G);
   if (L.init) L.init(G);
-  show('play'); renderTray(); say(L.intro, '');
+  show('play'); renderTray();
+  // пауза на план: огонь замер, игрок читает вводные и осматривает сцену. Повторно уровень короче
+  G.plan = G.planMax = SAVE.best[L.id] ? 3 : 5;
+  $('bubble').style.opacity = 0; $('briefTxt').textContent = L.intro; $('brief').hidden = false; planTick();
 }
+function planTick() { const n = Math.ceil(G.plan); $('briefN').textContent = n; $('brief').style.setProperty('--p', (1 - G.plan / G.planMax) * 100 + '%'); $('timer').textContent = 'План ' + n; }
+// конец паузы: по таймеру, по кнопке «Начать» или с первым действием игрока
+function beginPlay() { if (!G || !G.plan) return; G.plan = 0; $('brief').hidden = true; $('timer').textContent = '0.0 с'; say(G.L.intro, ''); SFX.click(); }
+$('briefGo').onclick = (e) => { e.stopPropagation(); beginPlay(); };
 function renderTray() {
   const tray = $('tray'); tray.innerHTML = '';
   Object.entries(TOOLS).filter(([id]) => SAVE.owned.includes(id)).forEach(([id, t]) => {
     const b = document.createElement('button'); b.className = 'tool'; b.id = 'tool-' + id; b.setAttribute('aria-pressed', G.tool === id);
     b.innerHTML = `<span class="ball">${t.icon}<span class="cd"></span></span><span class="lab">${t.short || t.name}</span>`;
-    b.onclick = (e) => { e.stopPropagation(); if (!G || G.over) return; G.tool = id; document.querySelectorAll('.tool').forEach(x => x.setAttribute('aria-pressed', x === b));
+    b.onclick = (e) => { e.stopPropagation(); if (!G || G.over) return; beginPlay(); G.tool = id; document.querySelectorAll('.tool').forEach(x => x.setAttribute('aria-pressed', x === b));
       const hot = G.items.filter(it => it.fire > 0).sort((a, b2) => b2.fire * b2.value - a.fire * a.value)[0];
       if (hot) act({ x: hot.aimAt[0], y: hot.aimAt[1] }, true); else say('Огня нет. Подумай, что ещё нужно сделать.', ''); };
     tray.appendChild(b);
@@ -44,7 +51,7 @@ cv.addEventListener('pointermove', e => {
 });
 cv.addEventListener('pointerdown', e => {
   if (mode !== 'play' || !G || G.over) return; cv.setPointerCapture(e.pointerId); const p = worldPt(e);
-  if (G.L.drag && G.L.drag.grab(G, p)) { G.dragging = true; G.can.drag = true; G.aim = null; SFX.click(); return; }
+  if (G.L.drag && G.L.drag.grab(G, p)) { beginPlay(); G.dragging = true; G.can.drag = true; G.aim = null; SFX.click(); return; }
   G.aim = { ...p, down: true };
 });
 cv.addEventListener('pointerup', e => {
@@ -52,6 +59,7 @@ cv.addEventListener('pointerup', e => {
   const p = worldPt(e);
   if (G.dragging) { G.dragging = false; G.can.drag = false; G.L.drag.drop(G, p); return; }
   G.aim = { ...p, down: false };
+  beginPlay();
   if (e.pointerType !== 'mouse') setTimeout(() => { if (G && G.aim && !G.aim.down) G.aim = null; }, 400);
   act(p);
 });
@@ -150,6 +158,7 @@ function blast(x, y) {
 function update(dt) {
   if (!G || G.over) return;
   const L = G.L;
+  if (G.plan > 0) { G.plan -= dt; if (G.plan <= 0) beginPlay(); else planTick(); return; }
   G.time += dt;
   for (const k in G.cds) G.cds[k] = Math.max(0, G.cds[k] - dt);
   let total = 0;
