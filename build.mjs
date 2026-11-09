@@ -8,7 +8,7 @@ const read = p => readFileSync(join(SRC, p), 'utf8');
 const dir = (d, filter = f => f.endsWith('.js')) => readdirSync(join(SRC, d)).filter(filter).sort().map(f => `${d}/${f}`);
 
 // Эпизоды по порядку. Новый эпизод: создать папку src/levels/<id>/ и добавить её сюда.
-const EPISODES = ['dom', 'dacha', 'gorod'];
+const EPISODES = ['dom', 'dacha', 'gorod', 'transport'];
 
 const order = [
   'engine/core.js',

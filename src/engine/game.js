@@ -3,7 +3,7 @@ function startLevel(i) {
   const L = LEVELS[i];
   G = { li: i, L, time: 0, dmg: 0, mistakes: 0, tool: 'water', cds: {}, over: false, parts: [], throws: [], aim: null, calm: 0, nagT: 0,
     flags: { ...(L.flags || {}) }, gas: L.gas || 0, can: L.can ? { ...L.can, heat: 0 } : null,
-    items: L.items.map(d => ({ ...d, cls: d.cls || 'A', fire: d.fire || 0, heat: 0, char: 0, wet: 0 })) };
+    items: L.items.map(d => ({ ...d, cls: d.cls || 'A', fire: d.fire || 0, heat: 0, char: 0, wet: 0 })), bonus: new Set() };
   G.byId = Object.fromEntries(G.items.map(it => [it.id, it]));
   curEp = L.ep || 0;
   initExtras(G);
@@ -19,7 +19,8 @@ function beginPlay() { if (!G || !G.plan) return; G.plan = 0; $('brief').hidden 
 $('briefGo').onclick = (e) => { e.stopPropagation(); beginPlay(); };
 function renderTray() {
   const tray = $('tray'); tray.innerHTML = '';
-  Object.entries(TOOLS).filter(([id]) => SAVE.owned.includes(id)).forEach(([id, t]) => {
+  // свои средства игрока, плюс найденные в сцене (G.bonus), минус те, которых тут нет (L.noTools)
+  Object.entries(TOOLS).filter(([id]) => (SAVE.owned.includes(id) || G.bonus.has(id)) && !(G.L.noTools || []).includes(id)).forEach(([id, t]) => {
     const b = document.createElement('button'); b.className = 'tool'; b.id = 'tool-' + id; b.setAttribute('aria-pressed', G.tool === id);
     b.innerHTML = `<span class="ball">${t.icon}<span class="cd"></span></span><span class="lab">${t.short || t.name}</span>`;
     b.onclick = (e) => { e.stopPropagation(); if (!G || G.over) return; beginPlay(); G.tool = id; document.querySelectorAll('.tool').forEach(x => x.setAttribute('aria-pressed', x === b));
@@ -82,7 +83,7 @@ function landed(th) {
   // вода на проводке под напряжением
   if (th.id === 'water') for (const z of G.L.live || []) if (z.on(G) && inBox(p, z.box)) {
     G.mistakes++; G.dmg += 10; if (z.extra) G.byId[z.extra].fire = Math.min(1, G.byId[z.extra].fire + .3);
-    say('Вода попала на прибор под напряжением. Удар током! Сначала выдерни вилку из розетки.', 'bad');
+    say(z.msg || 'Вода попала на прибор под напряжением. Удар током! Сначала выдерни вилку из розетки.', 'bad');
     boom(z.at[0], z.at[1]); return;
   }
   if (th.id === 'water') { burst(p.x, p.y, t.color, 46, 'drop'); SFX.splash(); }

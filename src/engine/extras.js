@@ -83,3 +83,8 @@ function medalsHtml(res) {
     return `<span class="medal ${now ? 'on' : ever ? 'was' : ''} ${isNew ? 'new' : ''} ${hinted ? 'hint' : ''}"><i>${now ? '✓' : ever ? '✓' : '?'}</i>${name}</span>`;
   }).join('') + '</div>';
 }
+
+// средство, найденное в сцене (огнетушитель водителя, на АЗС): появляется в лотке до конца уровня и сразу выбрано
+function giveTool(G, id) {
+  G.bonus.add(id); G.tool = id; G.cds[id] = 0; renderTray(); SFX.clank();
+}
