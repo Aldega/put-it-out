@@ -24,9 +24,9 @@ LEVELS.push(
     ],
     links: [['boxes', 'chair', .12], ['boxes', 'laundry', .11]],
     // гнездо с птенцами на перилах за стулом
-    treasure: { name: 'Гнездо', acc: 'гнездо', medal: 'Птенцы спасены', x: 1100, y: 405, r: 50, near: 'chair', burnTime: 3, exit: [1350, 200], draw: drawNest,
+    treasure: { flee: [1100, -150], name: 'Гнездо', acc: 'гнездо', medal: 'Птенцы спасены', x: 1100, y: 405, r: 50, near: 'chair', burnTime: 3, exit: [1350, 200], draw: drawNest,
       savedMsg: 'Гнездо переставили на соседний балкон. Птенцы пищат от радости.',
-      lostMsg: 'Птенцы надышались дымом. Мама-голубь будет искать их долго.' },
+      lostMsg: 'Птенцы выпорхнули из гнезда раньше времени. Мама-голубь будет искать их долго.' },
     medals: [
       { id: 'canfirst', name: 'Сначала баллончик', test: G => beforeThrow(G, G.can.safeT) },
       { id: 'laundry', name: 'Бельё сухое', test: G => !G.burned.has('laundry') && G.soaked === 0 },

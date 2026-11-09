@@ -38,7 +38,7 @@ LEVELS.push(
     ],
     links: [['car', 'puddle', .2, 1], ['car', 'tree', .07], ['puddle', 'tree', .09], ['jet', 'balcony', .2], ['car', 'balcony', .04]],
     // кот залез на дерево
-    treasure: { name: 'Кот', acc: 'кота', medal: 'Кот снят с дерева', x: 205, y: 250, r: 60, near: 'tree', burnTime: 3, exit: [-120, 600], draw: drawCat,
+    treasure: { flee: true, name: 'Кот', acc: 'кота', medal: 'Кот снят с дерева', x: 205, y: 250, r: 60, near: 'tree', burnTime: 3, exit: [-120, 600], draw: drawCat,
       savedMsg: 'Кота сняли с дерева. Он сразу удрал в подвал.',
       lostMsg: 'Кот спрыгнул с горящего дерева прямо в кусты. Цел, но обижен на весь двор.' },
     medals: [

@@ -14,7 +14,7 @@ LEVELS.push(
     ],
     links: [['tree', 'gifts', .15], ['tree', 'sofa', .09]],
     // щенок спит прямо у горящей ёлки
-    treasure: { name: 'Щенок', acc: 'щенка', medal: 'Щенок спасён', x: 470, y: 608, r: 60, near: 'tree', burnTime: 4, exit: [-100, 600], draw: drawPuppy,
+    treasure: { flee: true, name: 'Щенок', acc: 'щенка', medal: 'Щенок спасён', x: 470, y: 608, r: 60, near: 'tree', burnTime: 4, exit: [-100, 600], draw: drawPuppy,
       savedMsg: 'Щенок спасён и спрятался под диваном в коридоре.',
       lostMsg: 'Щенок испугался дыма и забился в угол. Его нужно было вынести сразу.' },
     medals: [

@@ -31,9 +31,9 @@ LEVELS.push(
     ],
     links: [['veranda', 'house', .1], ['veranda', 'bush', .16, .5], ['bush', 'kennel', .16, .5]],
     // Шарик на цепи у будки
-    treasure: { name: 'Шарик', acc: 'Шарика', medal: 'Шарик спасён', x: 1010, y: 525, r: 60, near: 'kennel', burnTime: 3, exit: [1350, 640], draw: drawDog,
+    treasure: { flee: true, name: 'Шарик', acc: 'Шарика', medal: 'Шарик спасён', x: 1010, y: 525, r: 60, near: 'kennel', burnTime: 3, exit: [1350, 640], draw: drawDog,
       savedMsg: 'Шарика отстегнули с цепи, и он умчался за калитку. Гав!',
-      lostMsg: 'Шарик рвался с цепи и наглотался дыма. Его надо было отстегнуть сразу.' },
+      lostMsg: 'Шарик сорвался с цепи и удрал за забор. Цел, но перепуган. Его надо было отстегнуть сразу.' },
     medals: [
       { id: 'switchfirst', name: 'Сначала рубильник', test: G => beforeThrow(G, G.flags.switchT) },
       { id: 'house', name: 'Дом цел', test: G => !G.burned.has('house') },

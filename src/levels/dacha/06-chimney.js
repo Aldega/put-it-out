@@ -28,7 +28,7 @@ LEVELS.push(
     ],
     links: [['wood', 'roof', .08], ['leaves', 'roof', .06]],
     // кот греется на коньке крыши рядом с трубой
-    treasure: { name: 'Кот', acc: 'кота', medal: 'Кот спасён', x: 480, y: 188, r: 60, near: 'roof', burnTime: 3, exit: [-100, 600], draw: drawCat,
+    treasure: { flee: true, name: 'Кот', acc: 'кота', medal: 'Кот спасён', x: 480, y: 188, r: 60, near: 'roof', burnTime: 3, exit: [-100, 600], draw: drawCat,
       savedMsg: 'Кота сняли с крыши. Он грелся у трубы и даже не заметил пожара.',
       lostMsg: 'Кот опалил хвост и спрыгнул с крыши в крапиву. Обижен на всех.' },
     medals: [

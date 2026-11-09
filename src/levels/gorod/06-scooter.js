@@ -31,9 +31,9 @@ LEVELS.push(
     ],
     links: [['scooter', 'coats', .12], ['scooter', 'shoes', .14]],
     // попугай в клетке на крючке
-    treasure: { name: 'Кеша', acc: 'Кешу', medal: 'Кеша спасён', x: 200, y: 180, r: 60, near: 'scooter', burnTime: 5, exit: [-120, 300], draw: drawParrot,
+    treasure: { flee: [-150, 60], name: 'Кеша', acc: 'Кешу', medal: 'Кеша спасён', x: 200, y: 180, r: 60, near: 'scooter', burnTime: 5, exit: [-120, 300], draw: drawParrot,
       savedMsg: 'Клетку с Кешей вынесли на лестницу. «Молодец! Молодец!» — кричит Кеша.',
-      lostMsg: 'Кеша наглотался дыма и охрип. Говорить он теперь будет не скоро.' },
+      lostMsg: 'Кеша вырвался из клетки и улетел в форточку. Ищи его теперь по всему двору.' },
     medals: [
       { id: 'unplugfirst', name: 'Сначала зарядка', test: G => beforeThrow(G, G.flags.unplugT) },
       { id: 'coats', name: 'Куртки целы', test: G => !G.burned.has('coats') },

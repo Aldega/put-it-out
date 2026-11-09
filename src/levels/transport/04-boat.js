@@ -28,9 +28,9 @@ LEVELS.push(
     ],
     links: [['motor', 'slick', .25, 1], ['slick', 'pier', .12], ['motor', 'boat', .1]],
     // рыбак прыгнул за борт
-    treasure: { name: 'Рыбак', acc: 'рыбака', medal: 'Рыбак спасён', x: 600, y: 560, r: 60, near: 'slick', burnTime: 4, exit: [120, 380], draw: drawSwimmer,
+    treasure: { flee: [1400, 640], name: 'Рыбак', acc: 'рыбака', medal: 'Рыбак спасён', x: 600, y: 560, r: 60, near: 'slick', burnTime: 4, exit: [120, 380], draw: drawSwimmer,
       savedMsg: 'Рыбаку бросили спасательный круг и вытянули на причал. Мокрый, зато целый!',
-      lostMsg: 'Рыбак нырнул под горящее пятно и выплыл далеко. Обошлось, но удочки утонули.' },
+      lostMsg: 'Рыбак уплыл подальше от горящего пятна. Обошлось, но удочки утонули.' },
     medals: [
       { id: 'fuelfirst', name: 'Сначала топливо', test: G => beforeThrow(G, G.flags.fuelT) },
       { id: 'pier', name: 'Причал цел', test: G => !G.burned.has('pier') },
