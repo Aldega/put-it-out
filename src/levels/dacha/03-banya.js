@@ -26,9 +26,9 @@ LEVELS.push(
     ],
     links: [['floor', 'brooms', .16], ['floor', 'bench', .14], ['bench', 'brooms', .08]],
     // дед задремал на верхнем полке
-    treasure: { name: 'Дед', acc: 'деда', medal: 'Дед спасён', x: 1080, y: 278, r: 70, near: 'bench', burnTime: 3, exit: [-120, 420], draw: drawGrandpa,
+    treasure: { flee: true, name: 'Дед', acc: 'деда', medal: 'Дед спасён', x: 1080, y: 278, r: 70, near: 'bench', burnTime: 3, exit: [-120, 420], draw: drawGrandpa,
       savedMsg: 'Дед выскочил в предбанник в одном полотенце. Зато живой и даже не обжёгся!',
-      lostMsg: 'Дед наглотался дыма. Откачали, но его надо было выводить первым.' },
+      lostMsg: 'Дед закашлялся и сам выбрался наружу. Обошлось, но выводить его надо было первым.' },
     medals: [
       { id: 'doorfirst', name: 'Сначала дверца', test: G => beforeThrow(G, G.flags.doorT) },
       { id: 'brooms', name: 'Веники целы', test: G => !G.burned.has('brooms') },

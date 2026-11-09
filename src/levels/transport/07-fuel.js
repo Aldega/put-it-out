@@ -32,9 +32,9 @@ LEVELS.push(
     ],
     links: [['spill', 'car', .14]],
     // пёс в машине ждёт хозяина
-    treasure: { name: 'Пёс', acc: 'пса', medal: 'Пёс спасён', x: 525, y: 425, r: 50, near: 'spill', burnTime: 5, exit: [-120, 560], draw: drawCarDog,
+    treasure: { flee: true, name: 'Пёс', acc: 'пса', medal: 'Пёс спасён', x: 525, y: 425, r: 50, near: 'spill', burnTime: 5, exit: [-120, 560], draw: drawCarDog,
       savedMsg: 'Пса вывели из машины и отвели к магазину. Хвост виляет!',
-      lostMsg: 'Пёс наглотался дыма и чихает. Ему нужен ветеринар.' },
+      lostMsg: 'Пёс выпрыгнул в окно машины и удрал за магазин. Цел, но перепуган.' },
     medals: [
       { id: 'stopfirst', name: 'Сначала аварийный стоп', test: G => beforeThrow(G, G.flags.stopT) },
       { id: 'tanker', name: 'Бензовоз отогнан', test: G => G.flags.tankT != null },

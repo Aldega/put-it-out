@@ -24,7 +24,7 @@ LEVELS.push(
     ],
     links: [['stroller', 'mail', .12], ['stroller', 'door', .13]],
     // соседка спускается по лестнице
-    treasure: { name: 'Соседка', acc: 'соседку', medal: 'Соседка выведена', x: 1120, y: 400, r: 65, near: 'stroller', burnTime: 6, exit: [-120, 460], draw: drawGranny,
+    treasure: { flee: true, name: 'Соседка', acc: 'соседку', medal: 'Соседка выведена', x: 1120, y: 400, r: 65, near: 'stroller', burnTime: 6, exit: [-120, 460], draw: drawGranny,
       savedMsg: 'Бабу Валю с котом вывели на улицу. Она уже рассказывает всему двору, какой ты молодец.',
       lostMsg: 'Баба Валя закашлялась от дыма и вернулась к себе ждать пожарных. Её надо было вывести сразу.' },
     medals: [

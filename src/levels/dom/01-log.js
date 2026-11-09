@@ -13,7 +13,7 @@ LEVELS.push(
     ],
     links: [['log', 'rug', .16], ['rug', 'armchair', .12]],
     // кот спит на краю ковра у кресла: огонь доберётся до него по ковру
-    treasure: { name: 'Кот', acc: 'кота', medal: 'Кот спасён', x: 378, y: 660, r: 60, near: 'rug', burnTime: 2.5, exit: [-100, 600], draw: drawCat,
+    treasure: { flee: true, name: 'Кот', acc: 'кота', medal: 'Кот спасён', x: 378, y: 660, r: 60, near: 'rug', burnTime: 2.5, exit: [-100, 600], draw: drawCat,
       savedMsg: 'Кот спасён и убежал в коридор. Сначала люди и животные, потом вещи.',
       lostMsg: 'Кот обжёгся и с воплем убежал. В следующий раз вынеси его сразу.' },
     medals: [

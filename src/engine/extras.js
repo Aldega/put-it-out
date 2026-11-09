@@ -28,9 +28,19 @@ function tickExtras(G, dt) {
       // предупреждаем не сразу, чтобы игрок успел прочитать вступление; знак «!» мигает с самого начала
       if (!t.warned && G.time > 3) { t.warned = true; say(`${t.name} в опасности! Коснись, чтобы вынести.`, 'bad'); }
       t.burn += dt * it.fire;
-      if (t.burn > t.burnTime) { t.state = 'lost'; G.dmg += 10; burst(t.x, t.y, '#6b6b6b', 18, 'steam'); SFX.spread(); say(t.lostMsg, 'bad'); }
+      if (t.burn > t.burnTime) {
+        G.dmg += 10; say(t.lostMsg, 'bad');
+        // живые не сгорают, а убегают сами (flee: true или куда бежать [x, y]); вещи портятся
+        if (t.flee) { t.state = 'fleeing'; t.fly = 0; t.to = Array.isArray(t.flee) ? t.flee : t.exit; SFX.cloth(); }
+        else { t.state = 'lost'; burst(t.x, t.y, '#6b6b6b', 18, 'steam'); SFX.spread(); }
+      }
     }
   } else if (t.state === 'flying') { t.fly += dt * 1.4; if (t.fly >= 1) t.state = 'saved'; }
+  else if (t.state === 'fleeing') {
+    t.fly += dt * .9; if (t.fly >= 1) { t.state = 'lost'; return; }
+    // пыль из-под лап
+    if (Math.random() < .5) { const k = t.fly; G.parts.push({ k: 'smoke', x: t.x + (t.to[0] - t.x) * k, y: t.y + (t.to[1] - t.y) * k + 30, vx: (Math.random() - .5) * 40, vy: -20, life: 0, max: .8, r: 8 }); }
+  }
 }
 
 function drawTreasure(G) {
@@ -39,6 +49,9 @@ function drawTreasure(G) {
   if (t.state === 'flying') {
     const k = t.fly, x = t.x + (t.exit[0] - t.x) * k, y = t.y + (t.exit[1] - t.y) * k - Math.sin(k * Math.PI) * 140;
     ctx.translate(x, y); ctx.scale(1 - k * .4, 1 - k * .4); ctx.translate(-t.x, -t.y);
+  } else if (t.state === 'fleeing') { // удирает вприпрыжку
+    const k = t.fly, x = t.x + (t.to[0] - t.x) * k, y = t.y + (t.to[1] - t.y) * k - Math.abs(Math.sin(k * 18)) * 28;
+    ctx.translate(x, y); ctx.rotate(Math.sin(k * 36) * .12); ctx.translate(-t.x, -t.y);
   }
   t.draw(G, t);
   ctx.restore();

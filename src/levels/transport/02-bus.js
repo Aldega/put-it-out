@@ -14,9 +14,9 @@ LEVELS.push(
     ],
     links: [['engine', 'salon', .13], ['engine', 'kiosk', .08]],
     // пассажиры в салоне: вывести через двери
-    treasure: { name: 'Пассажиры', acc: 'пассажиров', medal: 'Все вышли', x: 596, y: 372, r: 80, near: 'engine', burnTime: 4.5, exit: [1350, 470], draw: drawPassengers,
+    treasure: { flee: true, name: 'Пассажиры', acc: 'пассажиров', medal: 'Все вышли', x: 596, y: 372, r: 80, near: 'engine', burnTime: 4.5, exit: [1350, 470], draw: drawPassengers,
       savedMsg: 'Двери открыты, пассажиры вышли и отошли подальше. Теперь можно тушить спокойно.',
-      lostMsg: 'Пассажиры наглотались дыма, пока искали выход. Все живы, но кашляют.' },
+      lostMsg: 'Пассажиры сами выбрались через окна, кашляя от дыма. Все живы, но напуганы.' },
     medals: [
       { id: 'peoplefirst', name: 'Сначала люди', test: G => beforeThrow(G, G.tr.savedT) },
       { id: 'kiosk', name: 'Киоск цел', test: G => !G.burned.has('kiosk') },

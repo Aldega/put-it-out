@@ -24,9 +24,9 @@ LEVELS.push(
     ],
     links: [['bench', 'wood', .15], ['bench', 'shelf', .12]],
     // котята спят в коробке под верстаком
-    treasure: { name: 'Котята', acc: 'котят', medal: 'Котята спасены', x: 560, y: 640, r: 60, near: 'bench', burnTime: 6, exit: [1350, 520], draw: drawKittens,
+    treasure: { flee: true, name: 'Котята', acc: 'котят', medal: 'Котята спасены', x: 560, y: 640, r: 60, near: 'bench', burnTime: 6, exit: [1350, 520], draw: drawKittens,
       savedMsg: 'Коробку с котятами вынесли на травку. Мама-кошка уже бежит.',
-      lostMsg: 'Котята надышались дымом. Их выходили, но коробку надо было вынести сразу.' },
+      lostMsg: 'Котята выскочили из коробки и разбежались кто куда. Коробку надо было вынести сразу.' },
     medals: [
       { id: 'canfirst', name: 'Сначала канистра', test: G => beforeThrow(G, G.can.safeT) },
       { id: 'shelf', name: 'Краски целы', test: G => !G.burned.has('shelf') },

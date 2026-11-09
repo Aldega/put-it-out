@@ -24,7 +24,7 @@ LEVELS.push(
     ],
     links: [['g1', 'g2', .3, .25], ['g2', 'g3', .3, .25], ['g3', 'coop', .22, .3], ['coop', 'greenhouse', .15]],
     // куры гуляют в траве у курятника
-    treasure: { name: 'Куры', acc: 'кур', medal: 'Куры спасены', x: 735, y: 512, r: 55, near: 'g3', burnTime: 2.5, exit: [1350, 640], draw: drawChickens,
+    treasure: { flee: true, name: 'Куры', acc: 'кур', medal: 'Куры спасены', x: 735, y: 512, r: 55, near: 'g3', burnTime: 2.5, exit: [1350, 640], draw: drawChickens,
       savedMsg: 'Кур загнали в сарай. Кудахчут, но целы.',
       lostMsg: 'Куры разбежались по лесу. Ловить их теперь до вечера.' },
     medals: [

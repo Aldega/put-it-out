@@ -14,9 +14,9 @@ LEVELS.push(
     ],
     links: [['bear', 'box', .15], ['box', 'bed', .13]],
     // клетка с хомяком стоит на коробке с игрушками, рядом с медведем
-    treasure: { name: 'Хомяк', acc: 'хомяка', medal: 'Хомяк спасён', x: 412, y: 440, r: 60, near: 'box', burnTime: 2.5, exit: [-80, 560], draw: drawHamster,
+    treasure: { flee: true, name: 'Хомяк', acc: 'хомяка', medal: 'Хомяк спасён', x: 412, y: 440, r: 60, near: 'box', burnTime: 2.5, exit: [-80, 560], draw: drawHamster,
       savedMsg: 'Хомяк в безопасности. Клетку унесли в другую комнату.',
-      lostMsg: 'Хомяк надышался дымом. Его откачали, но лучше было вынести клетку сразу.' },
+      lostMsg: 'Хомяк выскочил из клетки и удрал под шкаф. Клетку лучше было вынести сразу.' },
     medals: [
       { id: 'plugfirst', name: 'Сначала вилка', test: G => beforeThrow(G, G.flags.unplugT) },
       { id: 'toys', name: 'Игрушки целы', test: G => !G.burned.has('box') },
