@@ -20,12 +20,13 @@ function bgHallway(c) {
   rr(186, 60, 28, 14, 4, c); toon('#5a5f66', 3, c);
 }
 function hallBack(G) {
-  // розетка и шнур зарядки
-  socket(ctx, 760, 460);
+  // розетка и шнур зарядки слева, над обувницей: на телефоне справа её закрывают кнопки средств
+  socket(ctx, 240, 405);
+  cord(425, 535, 380, 606, 10); rr(345, 594, 50, 28, 6); toon('#2f3540', 4);
   if (G.flags.plugged) {
-    cord(648, 532, 740, 600, 0); rr(700, 570, 50, 30, 6); toon('#2f3540', 4); circ(738, 585, 4); ctx.fillStyle = '#ff5a3a'; ctx.fill();
-    cord(725, 570, 755, 470, -40); plugAt(760, 460);
-  } else { cord(648, 532, 700, 590, 10); rr(690, 575, 50, 28, 6); toon('#2f3540', 4); plugAt(820, 560); cord(740, 585, 808, 560, 10); }
+    circ(383, 608, 4); ctx.fillStyle = '#ff5a3a'; ctx.fill();
+    cord(360, 596, 240, 415, -60); plugAt(240, 405);
+  } else { cord(352, 612, 300, 660, 10); plugAt(292, 660); }
 }
 function drawScooter(it, G) {
   const k = it.char, col = mix('#2f3540', '#1e130d', k * .5), acc = mix('#7cc243', '#1e130d', k * .85);

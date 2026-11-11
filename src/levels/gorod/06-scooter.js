@@ -23,7 +23,7 @@ LEVELS.push(
     },
     done: G => G.bat <= 0,
     notDone: 'Батарея всё ещё горячая и может вспыхнуть снова. Остуди её водой!',
-    hot: [{ x: 760, y: 460, r: 45, label: G => G.flags.plugged ? 'Выдернуть зарядку' : null, tap: G => { G.flags.plugged = false; G.flags.unplugT = G.time; SFX.unplug(); say('Зарядка выдернута. Теперь воду лить можно.', 'good'); } }],
+    hot: [{ x: 240, y: 405, r: 45, label: G => G.flags.plugged ? 'Выдернуть зарядку' : null, tap: G => { G.flags.plugged = false; G.flags.unplugT = G.time; SFX.unplug(); say('Зарядка выдернута. Теперь воду лить можно.', 'good'); } }],
     items: [
       { id: 'coats', name: 'куртки', draw: drawCoats, value: 1.2, aimAt: [905, 330], spots: [[830, 400, 40], [905, 372, 45], [980, 410, 40], [905, 260, 45]], box: [785, 150, 1025, 425] },
       { id: 'shoes', name: 'обувницу', draw: drawShoeRack, value: .8, aimAt: [210, 490], spots: [[140, 485, 40], [210, 480, 45], [285, 485, 40]], box: [90, 465, 335, 600] },
