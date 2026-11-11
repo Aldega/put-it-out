@@ -6,7 +6,7 @@ LEVELS.push(
     back: G => drawHeater(G),
     boost: (G, it) => it.id === 'bear' && G.flags.plugged ? 1.6 : 1,
     live: [shockZone([620, 380, 910, 700], [760, 540], 'bear')],
-    hot: [{ x: 928, y: 482, r: 55, label: G => G.flags.plugged ? LABEL_PLUG : null, tap: G => { G.flags.plugged = false; G.flags.unplugT = G.time; SFX.unplug(); say('Вилка выдернута. Обогреватель обесточен, теперь вода безопасна.', 'good'); } }],
+    hot: [{ x: 230, y: 385, r: 50, label: G => G.flags.plugged ? LABEL_PLUG : null, tap: G => { G.flags.plugged = false; G.flags.unplugT = G.time; SFX.unplug(); say('Вилка выдернута. Обогреватель обесточен, теперь вода безопасна.', 'good'); } }],
     items: [
       { id: 'bed', name: 'кровать', draw: drawBed, value: 1.6, aimAt: [240, 470], spots: [[180, 480, 60], [250, 470, 70], [320, 480, 60], [100, 445, 50]], box: [30, 430, 350, 610] },
       { id: 'box', name: 'коробку', draw: drawToybox, value: 1, aimAt: [420, 520], spots: [[360, 535, 60], [425, 505, 60], [485, 530, 50]], box: [310, 480, 515, 660] },

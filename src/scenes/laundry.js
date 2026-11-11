@@ -10,7 +10,7 @@ function bgLaundry(c) {
   rr(820, 240, 220, 16, 6, c); toon('#c08552', 4, c);
   [[850, '#3fa9f5'], [895, '#ff7b9c'], [940, '#7cc243']].forEach(([x, col]) => { rr(x, 180, 32, 60, 8, c); toon(col, 4, c); rr(x + 10, 166, 12, 16, 3, c); toon('#ffffff', 3, c); });
   planks(c, 600, '#c99a6b', '#a67b4f', 30, 220);
-  socket(c, 1110, 400);
+  socket(c, 395, 380); // слева от доски: на телефоне справа её закрывают кнопки средств
 }
 function drawWardrobe(it) {
   const k = it.char, w = mix('#a86b3c', '#1e130d', k * .85);
@@ -30,8 +30,8 @@ function drawBoard(it) {
 }
 function drawIron(G) {
   const on = G.flags.plugged;
-  if (on) cord(740, 420, 1110, 402, 120); else { cord(740, 420, 860, 655, 90); plugAt(868, 655); }
-  if (on) plugAt(1110, 402);
+  if (on) cord(668, 425, 395, 382, 70); else { cord(668, 425, 470, 655, 90); plugAt(462, 655); }
+  if (on) plugAt(395, 382);
   ctx.beginPath(); ctx.moveTo(660, 452); ctx.lineTo(790, 452); ctx.quadraticCurveTo(790, 400, 730, 395); ctx.lineTo(680, 395); ctx.quadraticCurveTo(650, 410, 660, 452); ctx.closePath(); toon('#5ec3f2', 5);
   ctx.beginPath(); ctx.moveTo(690, 395); ctx.quadraticCurveTo(700, 360, 760, 365); ctx.quadraticCurveTo(775, 380, 770, 398); ctx.lineWidth = 9; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 4; ctx.strokeStyle = '#e9f6ff'; ctx.stroke();
   rr(655, 448, 140, 10, 4); toon(on ? mix('#ff6a3d', '#ffd23f', .5 + .5 * Math.sin(time * 4)) : '#c9d1db', 3);
