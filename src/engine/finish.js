@@ -9,7 +9,7 @@ function finish(win) {
     med = awardMedals(G); coins += med.fresh.length * 15;
     SAVE.coins += coins; SAVE.best[L.id] = Math.max(SAVE.best[L.id] || 0, stars); store();
   }
-  const next = LEVELS[G.li + 1];
+  const next = L.star ? null : LEVELS[G.li + 1];
   const P = $('panel');
   P.innerHTML = win ? `
     <span class="ribbon toon">Потушено!</span>
