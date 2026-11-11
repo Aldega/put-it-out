@@ -14,10 +14,11 @@ function initExtras(G) {
 
 function treasureHot(p) {
   const t = G.tr;
-  if (t && t.state === 'here' && Math.hypot(p.x - t.x, p.y - t.y) < t.r) return { x: t.x, y: t.y, r: t.r, label: 'Спасти ' + t.acc, h: { tap: saveTreasure } };
+  // gate(G): если вернул false, спасать ещё рано (уровень сам сделал шаг и сказал, что дальше); gateLabel(G): подпись вместо «Спасти ...»
+  if (t && t.state === 'here' && Math.hypot(p.x - t.x, p.y - t.y) < t.r) return { x: t.x, y: t.y, r: t.r, label: (t.gateLabel && t.gateLabel(G)) || 'Спасти ' + t.acc, h: { tap: G => { if (!t.gate || t.gate(G)) saveTreasure(G); } } };
   return null;
 }
-function saveTreasure(G) { const t = G.tr; t.savedT = G.time; t.state = 'flying'; t.fly = 0; SFX.cloth(); say(t.savedMsg, 'good'); }
+function saveTreasure(G) { const t = G.tr; t.savedT = G.time; t.state = 'flying'; t.fly = 0; SFX.cloth(); say(typeof t.savedMsg === 'function' ? t.savedMsg(G) : t.savedMsg, 'good'); }
 
 function tickExtras(G, dt) {
   for (const it of G.items) if (it.fire > 0) G.burned.add(it.id);

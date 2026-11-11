@@ -19,6 +19,8 @@ const order = [
   'levels/registry.js',
   // каждый эпизод: сначала его уровни, потом map.js, который их собирает в эпизод
   ...EPISODES.flatMap(ep => [...dir(`levels/${ep}`, f => /^\d+-.*\.js$/.test(f)), ...(existsSync(join(SRC, `levels/${ep}/map.js`)) ? [`levels/${ep}/map.js`] : [])]),
+  // уровни со звёздочкой (вне эпизодов, открыты сразу): строго после всех эпизодов
+  ...dir('levels/star'),
   'engine/sfx.js',
   'engine/screens.js',
   'engine/game.js',

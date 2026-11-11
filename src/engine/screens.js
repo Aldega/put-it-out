@@ -6,7 +6,7 @@ function show(m) {
   $('scrTitle').hidden = m !== 'title'; $('scrMap').hidden = m !== 'map'; $('scrPlay').hidden = m !== 'play'; $('popup').hidden = true;
   if (m === 'map') renderMap();
 }
-$('btnPlay').onclick = () => { const i = LEVELS.findIndex((l, i) => unlocked(i) && !SAVE.best[l.id]); curEp = i < 0 ? EPISODES.length - 1 : LEVELS[i].ep; show('map'); };
+$('btnPlay').onclick = () => { const i = LEVELS.findIndex((l, i) => !l.star && unlocked(i) && !SAVE.best[l.id]); curEp = i < 0 ? EPISODES.length - 1 : LEVELS[i].ep; show('map'); };
 $('epPrev').onclick = () => { if (curEp > 0) { curEp--; SFX.click(); renderMap(); } };
 $('epNext').onclick = () => { if (curEp < EPISODES.length - 1) { curEp++; SFX.click(); renderMap(); } };
 $('mapBack').onclick = () => show('title');
@@ -14,14 +14,15 @@ $('btnPause').onclick = () => { G = null; SFX.silence(); show('map'); };
 $('btnShop').onclick = () => openShop();
 
 const LOCK = '<svg class="lock" viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3" fill="none" stroke="#2a1a12" stroke-width="2.6"/><rect x="4.5" y="10.5" width="15" height="11" rx="2.5" fill="#ffd23f" stroke="#2a1a12" stroke-width="2.2"/><circle cx="12" cy="16" r="1.8" fill="#2a1a12"/></svg>';
-function unlocked(i) { return i === 0 || (SAVE.best[LEVELS[i - 1].id] || 0) > 0; }
+// уровни со звёздочкой (L.star) открыты всегда: для тестировщиков и превью
+function unlocked(i) { return i === 0 || LEVELS[i].star || (SAVE.best[LEVELS[i - 1].id] || 0) > 0; }
 function renderMap() {
   $('coins').textContent = SAVE.coins;
   const E = EPISODES[curEp];
   $('epTitle').textContent = `Эпизод ${curEp + 1} · ${E.name}`;
   $('epPrev').hidden = curEp === 0; $('epNext').hidden = curEp === EPISODES.length - 1;
   const box = $('nodes'); box.innerHTML = '';
-  let cur = LEVELS.findIndex((l, i) => unlocked(i) && !SAVE.best[l.id]); if (cur < 0) cur = LEVELS.length - 1;
+  let cur = LEVELS.findIndex((l, i) => !l.star && unlocked(i) && !SAVE.best[l.id]); if (cur < 0) cur = LEVELS.length - 1;
   E.map.forEach((p, k) => {
     const i = E.from + k, lv = i < E.to ? LEVELS[i] : null, b = document.createElement('button'); b.className = 'node' + (i === cur ? ' cur' : '');
     b.style.left = p[0] + '%'; b.style.top = p[1] + '%';
@@ -34,6 +35,15 @@ function renderMap() {
       b.disabled = true; b.setAttribute('aria-label', k === 0 ? 'Закрыто: пройди прошлый эпизод' : 'Закрыто: пройди предыдущий уровень');
       b.innerHTML = LOCK + (lv ? `<span class="nm">${lv.name}</span>` : '');
     }
+    box.appendChild(b);
+  });
+  // уровни со звёздочкой: в самом начале карты первого эпизода, без замка
+  if (curEp === 0) LEVELS.forEach((lv, i) => {
+    if (!lv.star) return;
+    const b = document.createElement('button'), st = SAVE.best[lv.id] || 0; b.className = 'node star';
+    b.style.left = lv.star[0] + '%'; b.style.top = lv.star[1] + '%';
+    b.innerHTML = `<span class="n toon">★</span><span class="nm">${lv.name}</span><span class="stars">${STAR(st > 0)}${STAR(st > 1)}${STAR(st > 2)}</span>`;
+    b.onclick = () => startLevel(i); b.setAttribute('aria-label', `Особый уровень: ${lv.name}`);
     box.appendChild(b);
   });
 }
