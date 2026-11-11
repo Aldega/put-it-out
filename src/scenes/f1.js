@@ -54,23 +54,7 @@ function f1Back(G) {
   // шнур от грелок шин к розетке
   if (G.flags.plugged) { cord(158, 426, 230, 350, -10); plugAt(230, 350); }
   else { cord(158, 426, 210, 456, 30); plugAt(214, 460); }
-  // маршал с огнетушителем
-  const x = 1120, y = 452, give = G.flags.ext;
-  rr(x - 18, y + 70, 14, 52, 5); toon('#ff9d1f', 4); rr(x + 4, y + 70, 14, 52, 5); toon('#ff9d1f', 4);
-  rr(x - 24, y + 116, 22, 12, 5); toon(INK, 3); rr(x + 2, y + 116, 22, 12, 5); toon(INK, 3);
-  rr(x - 28, y - 4, 56, 82, 14); toon('#ff9d1f', 5); rr(x - 28, y + 30, 56, 10, 3); toon('#ffffff', 3);
-  circ(x, y - 26, 21); toon('#f4cfa8', 4); ctx.beginPath(); ctx.arc(x, y - 30, 23, Math.PI, 0); ctx.closePath(); toon('#ffffff', 4);
-  circ(x - 7, y - 22, 3); ctx.fillStyle = INK; ctx.fill(); circ(x + 7, y - 22, 3); ctx.fill();
-  ctx.beginPath(); ctx.arc(x, y - 16, 7, .2, Math.PI - .2); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
-  if (!give) {
-    // держит огнетушитель и ждёт
-    rr(x - 66, y + 14, 30, 64, 12); toon('#e63b2e', 4); rr(x - 60, y + 30, 18, 14, 3); toon('#ffffff', 2); rr(x - 58, y + 4, 14, 12, 3); toon(INK, 2);
-    ctx.beginPath(); ctx.moveTo(x - 24, y + 10); ctx.lineTo(x - 44, y + 34); ctx.moveTo(x + 24, y + 10); ctx.lineTo(x - 30, y + 50); ctx.lineWidth = 11; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = '#ff9d1f'; ctx.stroke();
-  } else {
-    // показывает «класс»
-    ctx.beginPath(); ctx.moveTo(x + 24, y + 8); ctx.lineTo(x + 46, y - 30); ctx.moveTo(x - 24, y + 10); ctx.lineTo(x - 34, y + 50); ctx.lineWidth = 11; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = '#ff9d1f'; ctx.stroke();
-    circ(x + 48, y - 36, 9); toon('#f4cfa8', 3); rr(x + 44, y - 56, 8, 16, 4); toon('#f4cfa8', 3);
-  }
+  f1Marshal(G, 1120, 452);
 }
 // стопка шин в грелках
 function drawF1Tyres(it, G) {
@@ -90,7 +74,8 @@ function drawF1Car(it, G) {
   const k = it.char, b = mix(F1_COL, '#1e130d', k * .85), s = mix(F1_STRIPE, '#1e130d', k * .85);
   // днище и передний антикрыл
   rr(262, 522, 650, 20, 8); toon('#2f3540', 5);
-  rr(232, 514, 120, 16, 6); toon(b, 4); rr(226, 494, 18, 40, 5); toon(s, 4);
+  // после аварии переднего антикрыла нет, он валяется в гравии
+  if (!G.flags.crash) { rr(232, 514, 120, 16, 6); toon(b, 4); rr(226, 494, 18, 40, 5); toon(s, 4); }
   // кузов
   ctx.beginPath(); ctx.moveTo(262, 526); ctx.lineTo(266, 506); ctx.quadraticCurveTo(360, 478, 480, 466); ctx.lineTo(540, 458);
   ctx.lineTo(604, 452); ctx.lineTo(606, 398); ctx.quadraticCurveTo(640, 384, 670, 402); ctx.quadraticCurveTo(760, 440, 884, 462); ctx.lineTo(904, 476); ctx.lineTo(906, 526); ctx.closePath(); toon(b, 6);
@@ -118,7 +103,7 @@ function drawF1Car(it, G) {
   circ(613, 380, 8); toon(lc, 3);
   if (ers !== 'safe') { const t = (time * 1.4) % 1; ctx.save(); ctx.globalAlpha = (1 - t) * .8; circ(613, 380, 12 + t * 22); ctx.lineWidth = 4; ctx.strokeStyle = ers === 'on' ? '#ff3b2e' : '#ffd23f'; ctx.stroke(); ctx.restore(); }
   // колёса: широкие шины с жёлтой полосой
-  for (const [wx, wy, wr] of [[380, 532, 50], [820, 528, 56]]) {
+  for (const [wx, wy, wr] of G.flags.crash ? [[820, 528, 56]] : [[380, 532, 50], [820, 528, 56]]) {
     circ(wx, wy, wr); toon(mix('#26262a', '#1e130d', k * .5), 5);
     circ(wx, wy, wr * .72); ctx.lineWidth = 5; ctx.strokeStyle = mix(F1_STRIPE, '#3a2a20', k); ctx.stroke();
     circ(wx, wy, wr * .45); toon(mix('#9aa3ad', '#3a2a20', k * .8), 4);
@@ -153,4 +138,24 @@ function drawF1Pilot(G, t) {
     ctx.beginPath(); ctx.moveTo(x - 38, y + 26); ctx.quadraticCurveTo(x - 26, y - 40, x + 30, y - 32); ctx.lineWidth = 13; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 7; ctx.strokeStyle = '#5a5f66'; ctx.stroke();
   }
   ctx.restore();
+}
+
+// маршал в оранжевом: держит огнетушитель, пока не отдал (G.flags.ext)
+function f1Marshal(G, x, y) {
+  const give = G.flags.ext;
+  rr(x - 18, y + 70, 14, 52, 5); toon('#ff9d1f', 4); rr(x + 4, y + 70, 14, 52, 5); toon('#ff9d1f', 4);
+  rr(x - 24, y + 116, 22, 12, 5); toon(INK, 3); rr(x + 2, y + 116, 22, 12, 5); toon(INK, 3);
+  rr(x - 28, y - 4, 56, 82, 14); toon('#ff9d1f', 5); rr(x - 28, y + 30, 56, 10, 3); toon('#ffffff', 3);
+  circ(x, y - 26, 21); toon('#f4cfa8', 4); ctx.beginPath(); ctx.arc(x, y - 30, 23, Math.PI, 0); ctx.closePath(); toon('#ffffff', 4);
+  circ(x - 7, y - 22, 3); ctx.fillStyle = INK; ctx.fill(); circ(x + 7, y - 22, 3); ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y - 16, 7, .2, Math.PI - .2); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
+  if (!give) {
+    // держит огнетушитель и ждёт
+    rr(x - 66, y + 14, 30, 64, 12); toon('#e63b2e', 4); rr(x - 60, y + 30, 18, 14, 3); toon('#ffffff', 2); rr(x - 58, y + 4, 14, 12, 3); toon(INK, 2);
+    ctx.beginPath(); ctx.moveTo(x - 24, y + 10); ctx.lineTo(x - 44, y + 34); ctx.moveTo(x + 24, y + 10); ctx.lineTo(x - 30, y + 50); ctx.lineWidth = 11; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = '#ff9d1f'; ctx.stroke();
+  } else {
+    // показывает «класс»
+    ctx.beginPath(); ctx.moveTo(x + 24, y + 8); ctx.lineTo(x + 46, y - 30); ctx.moveTo(x - 24, y + 10); ctx.lineTo(x - 34, y + 50); ctx.lineWidth = 11; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = '#ff9d1f'; ctx.stroke();
+    circ(x + 48, y - 36, 9); toon('#f4cfa8', 3); rr(x + 44, y - 56, 8, 16, 4); toon('#f4cfa8', 3);
+  }
 }
