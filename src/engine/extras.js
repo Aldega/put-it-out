@@ -102,3 +102,29 @@ function medalsHtml(res) {
 function giveTool(G, id) {
   G.bonus.add(id); G.tool = id; G.cds[id] = 0; renderTray(); SFX.clank();
 }
+
+// ================== спасённые на первом экране ==================
+// Живые (treasure.flee) из уровней, где их спасли. Берём из сохранения медалей, так что старые прохождения тоже считаются.
+function rescuedAll() { return LEVELS.filter(L => L.treasure && L.treasure.flee); }
+function rescuedNow() { const m = SAVE.medals || {}; return rescuedAll().filter(L => (m[L.id] || []).includes('treasure')); }
+// у кого рисунок широкий или высокий: [центр x, центр y, масштаб]
+const RESCUE_FIT = { bus: [596, 0, .3], banya: [0, 10, .55], stairwell: [0, 10, .5] };
+function drawRescued() {
+  const list = rescuedNow(), all = rescuedAll().length, fakeG = { flags: { wheel: true }, parts: [] };
+  // табличка со счётом в левом верхнем углу
+  const label = `Спасённые: ${list.length} из ${all}`;
+  ctx.font = '900 22px Rubik, sans-serif'; const w = ctx.measureText(label).width + 40;
+  rr(30, 28, w, 40, 20); toon('#fff6e4', 4); tex(ctx, 30 + w / 2, 49, label, 22, INK);
+  if (!list.length) return;
+  // встают на траве перед пожарной частью: задний ряд и передний
+  const rows = list.length > 9 ? 2 : 1, front = Math.ceil(list.length / rows), x0 = 130, x1 = VW - 30;
+  list.map((L, i) => [L, i]).reverse().forEach(([L, i]) => {
+    const back = i >= front, n = back ? list.length - front : front, k = back ? i - front : i;
+    const px = x0 + (x1 - x0) * (k + .5) / n + (back ? 30 : 0), py = (back ? 596 : 652) + Math.sin(time * 2 + i) * 2;
+    const T = L.treasure, fit = RESCUE_FIT[L.id] || [0, 0, .55], s = fit[2] * (back ? .85 : 1);
+    const t = { ...T, state: 'home', burn: 0, fly: 0 }, cx = fit[0] || T.x, cy = T.y + fit[1];
+    ctx.save(); ctx.translate(px, py); ctx.scale(s, s); ctx.translate(-cx, -cy);
+    try { T.draw(fakeG, t); } catch (e) {}
+    ctx.restore();
+  });
+}
