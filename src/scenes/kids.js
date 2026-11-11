@@ -22,8 +22,8 @@ function bgKids(c) {
   const bk = ['#e63b2e', '#3fa9f5', '#7cc243', '#ffd23f']; bk.forEach((col, i) => { rr(945 + i * 26, 175 + (i % 2) * 10, 22, 75 - (i % 2) * 10, 3, c); toon(col, 4, c); });
   circ(1100, 222, 26, c); toon('#ff7b9c', 4, c); c.beginPath(); c.moveTo(1076, 222); c.quadraticCurveTo(1100, 205, 1124, 222); c.lineWidth = 3; c.stroke();
   c.beginPath(); c.moveTo(1165, 250); c.lineTo(1165, 180); c.quadraticCurveTo(1180, 150, 1195, 180); c.lineTo(1195, 250); c.closePath(); toon('#f4efe6', 4, c); circ(1180, 195, 6, c); toon('#3fa9f5', 3, c);
-  // розетка
-  rr(905, 458, 46, 46, 8, c); toon('#ffffff', 4, c); circ(920, 481, 4, c); c.fillStyle = INK; c.fill(); circ(936, 481, 4, c); c.fill();
+  // розетка слева, над кроватью: на телефоне справа её закрывают кнопки средств
+  socket(c, 230, 385);
   // кубики на полу
   [[1010, 640, '#e63b2e', 'А'], [1068, 640, '#3fa9f5', 'Б'], [1039, 588, '#7cc243', 'В']].forEach(([x, y, col, t]) => { rr(x - 26, y - 26, 52, 52, 6, c); toon(col, 5, c); c.fillStyle = '#fff'; c.font = '900 30px Rubik, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(t, x, y + 2); });
   circ(1180, 650, 34, c); toon('#ffd23f', 5, c); c.beginPath(); c.arc(1180, 650, 34, -.9, .9); c.lineWidth = 4; c.stroke(); c.beginPath(); c.arc(1180, 650, 34, Math.PI - .9, Math.PI + .9); c.stroke();
@@ -51,15 +51,15 @@ function drawToybox(it) {
 function drawHeater(G) {
   const hot = G.flags.plugged ? .5 + .2 * Math.sin(G.time * 3) : 0;
   // провод
-  ctx.beginPath(); ctx.moveTo(830, 630);
-  if (G.flags.plugged) ctx.bezierCurveTo(880, 660, 900, 560, 928, 492); else ctx.bezierCurveTo(880, 660, 930, 680, 960, 662);
+  ctx.beginPath(); ctx.moveTo(700, 628);
+  if (G.flags.plugged) ctx.bezierCurveTo(560, 640, 250, 610, 230, 395); else ctx.bezierCurveTo(660, 660, 520, 690, 480, 676);
   ctx.lineWidth = 9; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 4; ctx.strokeStyle = '#ffffff'; ctx.stroke();
-  if (G.flags.plugged) { rr(915, 472, 26, 22, 5); toon('#f4f4f4', 4); } else { rr(955, 650, 26, 22, 5); toon('#f4f4f4', 4); }
+  if (G.flags.plugged) plugAt(230, 387); else plugAt(470, 676);
   for (let i = 0; i < 6; i++) { rr(700 + i * 22, 470, 20, 160, 9); toon(mix('#eceff4', '#ff6a3d', hot * (i % 2 ? .7 : 1)), 4); }
   rr(694, 618, 140, 16, 6); toon('#9aa3ad', 4);
   circ(712, 645, 9); toon('#555', 3); circ(816, 645, 9); toon('#555', 3);
   rr(745, 448, 40, 22, 6); toon(G.flags.plugged ? '#ff5a3c' : '#9aa3ad', 4);
-  if (G.flags.plugged && Math.random() < .08) { G.parts.push({ k: 'spark', x: 920 + Math.random() * 20, y: 484, vx: (Math.random() - .5) * 200, vy: -Math.random() * 200, life: 0, max: .4 }); }
+  if (G.flags.plugged && Math.random() < .08) { G.parts.push({ k: 'spark', x: 222 + Math.random() * 20, y: 390, vx: (Math.random() - .5) * 200, vy: -Math.random() * 200, life: 0, max: .4 }); }
 }
 function drawBear(it) {
   const k = it.char, fur = mix('#c8894a', '#1e130d', k * .85), furL = mix('#e8b880', '#2a1a12', k * .8), wet = it.wet > 0 ? .15 : 0;

@@ -6,7 +6,7 @@ LEVELS.push(
     back: G => drawTreeCord(G),
     boost: (G, it) => it.id === 'tree' && G.flags.plugged ? 1.5 : 1,
     live: [shockZone([540, 150, 860, 660], [700, 420], 'tree')],
-    hot: [{ x: 1010, y: 470, r: 55, label: G => G.flags.plugged ? LABEL_PLUG : null, tap: G => { G.flags.plugged = false; SFX.unplug(); say('Удлинитель выдернут, гирлянда погасла. Теперь можно лить воду.', 'good'); } }],
+    hot: [{ x: 120, y: 350, r: 50, label: G => G.flags.plugged ? LABEL_PLUG : null, tap: G => { G.flags.plugged = false; SFX.unplug(); say('Удлинитель выдернут, гирлянда погасла. Теперь можно лить воду.', 'good'); } }],
     items: [
       { id: 'sofa', name: 'диван', draw: drawSofa, value: 1.6, aimAt: [240, 500], spots: [[150, 520, 70], [240, 515, 70], [330, 520, 70], [170, 425, 60], [320, 425, 60]], box: [50, 410, 440, 620] },
       { id: 'gifts', name: 'подарки', draw: drawGifts, value: 1, aimAt: [870, 520], spots: [[845, 545, 55], [850, 475, 50], [940, 560, 45]], box: [790, 440, 985, 615] },

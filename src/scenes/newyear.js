@@ -16,7 +16,7 @@ function bgNewYear(c) {
   c.beginPath(); c.moveTo(450, 70); c.quadraticCurveTo(690, 150, 920, 70); c.lineWidth = 3; c.strokeStyle = INK; c.stroke();
   for (let i = 1; i < 10; i++) { const t = i / 10, x = 450 + 470 * t, y = 70 + 160 * t * (1 - t); c.beginPath(); c.moveTo(x - 14, y); c.lineTo(x + 14, y); c.lineTo(x, y + 30); c.closePath(); toon(['#e63b2e', '#ffd23f', '#7cc243', '#3fa9f5'][i % 4], 3, c); }
   planks(c, 600, '#9a6a45', '#7b5034');
-  socket(c, 1010, 470);
+  socket(c, 120, 350); // слева над диваном: на телефоне справа её закрывают кнопки средств
   // ведро под ёлку
   c.beginPath(); c.moveTo(650, 575); c.lineTo(750, 575); c.lineTo(738, 645); c.lineTo(662, 645); c.closePath(); toon('#e63b2e', 5, c);
   rr(645, 568, 110, 14, 6, c); toon('#ffd23f', 4, c);
@@ -58,8 +58,8 @@ function drawTree(it, G) {
   ctx.save(); ctx.translate(700, 172); ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 13 : 30; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath(); toon('#ffd23f', 5); ctx.restore();
 }
 function drawTreeCord(G) {
-  if (G.flags.plugged) { cord(712, 600, 1010, 474, 60); plugAt(1010, 474); }
-  else { cord(712, 600, 870, 668, 20); plugAt(878, 668); }
+  if (G.flags.plugged) { cord(690, 600, 120, 354, 120); plugAt(120, 354); }
+  else { cord(690, 600, 590, 676, 20); plugAt(582, 676); }
 }
 
 
