@@ -89,6 +89,7 @@ function landed(th) {
   if (th.id === 'water') { burst(p.x, p.y, t.color, 46, 'drop'); SFX.splash(); }
   if (th.id === 'sand') { burst(p.x, p.y, t.color, 60, 'grain'); SFX.thud(); }
   if (th.id === 'powder') { burst(p.x, p.y, '#ffffff', 40, 'grain'); for (let i = 0; i < 14; i++) G.parts.push({ k: 'puff', x: p.x + (Math.random() - .5) * 160, y: p.y + (Math.random() - .5) * 90, vx: (Math.random() - .5) * 60, vy: -20 - Math.random() * 30, life: 0, max: 1.6, r: 30 + Math.random() * 30 }); SFX.puff(); }
+  if (th.id === 'foam') { burst(p.x, p.y, '#fff8e6', 18, 'drop'); for (let i = 0; i < 22; i++) G.parts.push({ k: 'foam', x: p.x + (Math.random() - .5) * 220, y: p.y + (Math.random() - .3) * 70, life: 0, max: 3 + Math.random() * 1.5, r: 10 + Math.random() * 14 }); SFX.hiss(); }
   if (th.id === 'lid') { G.parts.push({ k: 'lid', x: p.x, y: p.y, life: 0, max: 1.2 }); setTimeout(() => SFX.clank(), 180); }
   if (th.id === 'blanket') { G.parts.push({ k: 'blanket', x: p.x, y: p.y, life: 0, max: 1.3 }); SFX.cloth(); }
   // уровень может сам обработать попадание (пар на каменке, охлаждение баллона...). true: дальше не считать
@@ -102,11 +103,13 @@ function landed(th) {
     // струя газа (класс C): обычными бросками её не потушить, решает уровень
     if (it.cls === 'C') { if (it.fire > 0) gasMsg = G.L.gasHit ? G.L.gasHit(G, it, th.id) : 'Струю газа так не потушить. Перекрой газ!'; continue; }
     // горящая жидкость (класс B): вода её разбрызгивает, песок и порошок хороши
-    if (it.cls === 'B') { if (th.id === 'water') { if (it.fire > 0) spill = it; continue; } if (th.id === 'sand') pw *= 1.5; if (th.id === 'powder') pw *= 1.3; if (th.id === 'blanket') pw *= 1.2; }
-    if (it.cls === 'F') { if (th.id === 'water') { if (it.fire > 0) { flare = it; } continue; } if (th.id === 'blanket') pw *= 1.6; if (th.id === 'sand') pw *= .7; if (th.id === 'powder') pw *= .8; }
+    if (it.cls === 'B') { if (th.id === 'water') { if (it.fire > 0) spill = it; continue; } if (th.id === 'sand') pw *= 1.5; if (th.id === 'powder') pw *= 1.3; if (th.id === 'foam') pw *= 1.5; if (th.id === 'blanket') pw *= 1.2; }
+    if (it.cls === 'F') { if (th.id === 'water') { if (it.fire > 0) { flare = it; } continue; } if (th.id === 'blanket') pw *= 1.6; if (th.id === 'sand') pw *= .7; if (th.id === 'powder') pw *= .8; if (th.id === 'foam') pw *= 1.2; }
     if (th.id === 'lid') { if (it.lidable) { pw = 1.2; lidOk = true; } else pw *= .35; }
     if (it.fire > 0) { hit = true; it.fire = Math.max(0, it.fire - pw); if (it.fire < .05) { it.fire = 0; it.wet = 4; burst(p.x, p.y - 20, '#ffffff', 10, 'steam'); SFX.hiss(); } }
-    if (th.id !== 'lid') { it.heat = Math.max(0, it.heat - .6); it.wet = Math.max(it.wet, th.id === 'water' ? (it.soakTime || 3) : 2); }
+    if (th.id !== 'lid') { it.heat = Math.max(0, it.heat - .6); it.wet = Math.max(it.wet, th.id === 'water' ? (it.soakTime || 3) : th.id === 'foam' ? 6 : 2); }
+    // пена остаётся плёнкой и охлаждает: уровень может это учесть (горячий карбон не вспыхнет снова)
+    if (th.id === 'foam') { it.foamed = true; it.foamT = G.time; }
   }
   if (spill) {
     G.spills = (G.spills || 0) + 1; G.mistakes++; G.dmg += 8; spill.fire = Math.min(1, spill.fire + .35);
@@ -123,11 +126,15 @@ function landed(th) {
   let decorMsg = null;
   if (th.id !== 'lid') for (const d of G.L.decor || []) if (G.flags[d.flag] && Math.hypot(p.x - d.x, p.y - d.y) < t.radius + d.r * .5) { G.flags[d.flag] = false; burst(d.x, d.y, '#ffffff', 10, 'steam'); SFX.hiss(); decorMsg = d.msg; }
   if (decorMsg && !hit) { say(decorMsg, ''); return; }
+  // уровень может сам прокомментировать попадание (например, порошок на болиде)
+  const own = G.L.afterHit && G.L.afterHit(G, th, p, hit);
+  if (own) { say(own[0], own[1]); return; }
   if (!hit) { if (!(th.id === 'water' && soakMiss(p))) say('Мимо огня. Целься прямо в пламя.', ''); }
   else if (th.id === 'lid') say(lidOk ? (G.L.lidMsg || 'Крышка перекрыла кислород. Так и тушат сковороду!') : 'Крышка маленькая: такой предмет ею не накрыть.', lidOk ? 'good' : 'bad');
   else if (th.id === 'sand') say('Песок сбивает пламя, но медленнее воды.', '');
   else if (th.id === 'blanket') say('Покрывало накрыло огонь и перекрыло воздух.', 'good');
   else if (th.id === 'powder') say('Порошок мгновенно сбивает пламя.', 'good');
+  else if (th.id === 'foam') say('Пена накрыла огонь плёнкой и охлаждает горячее.', 'good');
   else say('Отлично! Вода охлаждает горящее и гасит огонь.', 'good');
 }
 function burst(x, y, color, n, k) {

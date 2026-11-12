@@ -4,10 +4,17 @@ LEVELS.push(
     id: 'f1crash', name: 'Авария Ф-1', star: [17, 40], bg: bgF1Crash, dmgRate: 2, par: 16, reward: 320,
     flags: { crash: true, red: false, safe: false, wheel: false, ering: false, ext: false },
     intro: 'Болид «Огонька» вылетел с трассы и врезался в шинный барьер! Мотор горит, из пробитого бака течёт топливо, а мимо всё ещё несутся другие болиды.',
-    lesson: 'При аварии маршал сначала поднимает красный флаг. Гонку останавливают, и только тогда маршалы выбегают на трассу и едут медики. Если после удара лампа так и горит красным, болид под током: воду на него нельзя, тушат порошком. Защитная дуга над головой пилота выдерживает огромный удар.',
-    init: G => { G.pass = { x: -400, t: 1.2, col: '#3fa9f5' }; G.med = null; G.refT = 0; },
+    lesson: 'При аварии сначала поднимают красный флаг: гонку останавливают, и только тогда маршалы выбегают на трассу. Порошок за секунды сбивает пламя, а пена AFFF остужает горячий карбон, чтобы он не вспыхнул снова. Батарею изнутри заливает кольцо «E».',
+    init: G => {
+      G.pass = { x: -400, t: 1.2, col: '#3fa9f5' }; G.med = null; G.refT = 0; G.flagK = 0;
+      // маршалы на посту за трассой: побегут к болиду после красного флага
+      G.mars = [
+        { kind: 'powder', x0: 276, y0: 119, x1: 312, y1: 392, d: .35 },
+        { kind: 'foam', x0: 338, y0: 119, x1: 412, y1: 388, d: .75 }
+      ].map(m => ({ ...m, x: m.x0, y: m.y0, s: .62, gave: false, here: false }));
+    },
     back: G => f1CrashBack(G),
-    live: [{ box: [250, 370, 960, 590], at: [613, 400], on: () => true, extra: 'engine', msg: 'Лампа красная и не гаснет: после удара болид под током! Вода ударила током. Его тушат только порошком или песком.' }],
+    live: [{ box: [250, 370, 960, 590], at: [613, 400], on: () => true, extra: 'engine', msg: 'Лампа красная и не гаснет: после удара болид под током! Вода ударила током. Воду на болид нельзя.' }],
     boost: (G, it) => it.id === 'engine' && !G.flags.ering ? 1.25 : 1,
     tick(G, dt) {
       const e = G.byId.engine, P = G.pass;
@@ -15,26 +22,56 @@ LEVELS.push(
       // пока гонка идёт, по трассе проносятся болиды
       if (P.x > -260) P.x -= dt * 2400;
       else if (!G.flags.red) { P.t -= dt; if (P.t <= 0) { P.x = 1500; P.t = 1.6 + Math.random() * 1.4; P.col = ['#3fa9f5', '#e63b2e', '#7cc243', '#ff9d1f', '#ffffff'][Math.floor(Math.random() * 5)]; SFX.whoosh(); } }
+      // подсказка, если флаг долго не поднимают
+      if (!G.flags.red && !G.flags.flagHint && G.time > 7) { G.flags.flagHint = true; say('Гонка всё ещё идёт, к болиду никто не выбежит! За трассой на посту маршал держит красный флаг.', ''); }
+      // флаг поднимается, маршалы перебегают трассу к болиду
+      if (G.flags.red) {
+        G.flagK = Math.min(1, G.flagK + dt * 2.5);
+        for (const m of G.mars) {
+          const k = Math.max(0, Math.min(1, (G.time - G.flags.redT - m.d) / 1.6)), e2 = k * k * (3 - 2 * k);
+          m.x = m.x0 + (m.x1 - m.x0) * e2; m.y = m.y0 + (m.y1 - m.y0) * e2; m.s = .62 + .23 * e2; m.run = k > 0 && k < 1;
+          if (k >= 1 && !m.here) { m.here = true; SFX.click(); }
+        }
+      }
       // машина медиков приезжает после красного флага
       if (G.med && G.med.x > 800) G.med.x = Math.max(800, G.med.x - dt * 520);
-      // повреждённая батарея снова поджигает мотор, пока отсек не залит изнутри (кольцо «E»)
-      if (G.flags.ering || e.fire > 0) { G.refT = 0; return; }
+      if (e.fire > 0) { G.refT = 0; return; }
+      // повреждённая батарея поджигает мотор, пока отсек не залит изнутри (кольцо «E»);
+      // раскалённый карбон вспыхивает снова, пока его не охладили пеной
+      if (G.flags.ering && e.foamed) { G.refT = 0; return; }
       G.refT += dt;
-      if (G.refT > 3) { G.refT = 0; e.fire = .3; G.flags.reignited = true; SFX.flare(); sparks(G, 760, 450, 12); say('Повреждённая батарея снова подожгла мотор! Залей отсек изнутри: на корпусе есть кольцо «E».', 'bad'); }
+      if (G.refT > 3) {
+        G.refT = 0; e.fire = .3; G.flags.reignited = true; SFX.flare(); sparks(G, 760, 450, 12);
+        say(!G.flags.ering ? 'Повреждённая батарея снова подожгла мотор! Залей отсек изнутри: на корпусе есть кольцо «E».' : 'Раскалённый карбон снова вспыхнул! Порошок сбивает пламя, но не охлаждает. Залей мотор пеной.', 'bad');
+      }
     },
-    done: G => G.flags.red && G.flags.ering,
-    notDone: G => !G.flags.red ? 'Огонь потушен, но гонка всё ещё идёт! Подними красный флаг на посту маршалов.' : '',
-    spillMsg: 'Вода разбрызгала горящее топливо по гравию! Его тушат порошком или песком.',
+    afterHit(G, th, p) {
+      if (!inBox(p, G.byId.engine.box, 120)) return null;
+      if (th.id === 'powder') { G.flags.powderT = G.time; return G.byId.engine.foamed ? null : ['Порошок мгновенно сбил пламя! Но карбон и металл ещё раскалены: следом залей мотор пеной.', 'good']; }
+      if (th.id === 'foam') { if (G.flags.powderT != null) G.flags.combo = true; return ['Пена AFFF залила мотор плёнкой и остудила горячий карбон. Сам он больше не вспыхнет.', 'good']; }
+      return null;
+    },
+    done: G => G.flags.red && G.flags.ering && G.byId.engine.foamed,
+    notDone: G => !G.flags.red ? 'Огонь потушен, но гонка всё ещё идёт! Подними красный флаг: маршал держит его за трассой.' : !G.flags.ering ? 'Батарея ещё может поджечь мотор. Дёрни кольцо «E» на корпусе.' : !G.byId.engine.foamed ? 'Мотор ещё раскалён. Залей его пеной, иначе вспыхнет снова.' : '',
+    spillMsg: 'Вода разбрызгала горящее топливо по гравию! Его тушат порошком, пеной или песком.',
     hot: [
-      { x: 1012, y: 260, r: 48, label: G => G.flags.red ? null : 'Красный флаг', tap: G => {
+      { x: 205, y: 200, r: 72, label: G => G.flags.red ? null : 'Поднять красный флаг', tap: G => {
         G.flags.red = true; G.flags.redT = G.time; G.med = { x: 1500 }; SFX.cloth(); SFX.ding();
-        say('Красный флаг! Гонка остановлена, болиды сбросили скорость. Маршалы могут выбегать, а медики уже едут.', 'good');
+        say('Красный флаг! Гонка остановлена, болиды сбросили скорость. Маршалы бегут к болиду, медики уже едут.', 'good');
       } },
-      { x: 1100, y: 470, r: 60, label: G => G.flags.ext ? null : 'Огнетушитель маршала', tap: G => {
-        if (!G.flags.red) { G.flags.rushed = true; SFX.whoosh(); say('Мимо несутся болиды! Маршал не выбежит на трассу, пока гонка не остановлена. Сначала красный флаг.', 'bad'); return; }
-        G.flags.ext = true; G.flags.extT = G.time; giveTool(G, 'powder');
-        say('Маршал перебежал гравий и отдал тебе огнетушитель. Порошку ток не страшен!', 'good');
-      } },
+      // маршалы: на посту ждут флага, у болида отдают огнетушители
+      ...[0, 1].map(i => ({ dyn: G => {
+        const m = G.mars[i];
+        if (!G.flags.red) return i === 0 ? { x: 306, y: 140, r: 46, label: 'Маршалы' } : null;
+        if (!m.here || m.gave) return null;
+        return { x: m.x, y: m.y + 30 * m.s, r: 62, label: m.kind === 'foam' ? 'Пена у маршала' : 'Порошок у маршала' };
+      }, tap: G => {
+        const m = G.mars[i];
+        if (!G.flags.red) { G.flags.rushed = true; SFX.whoosh(); say('Мимо несутся болиды! Маршалы не выбегут на трассу, пока гонка не остановлена. Сначала красный флаг.', 'bad'); return; }
+        m.gave = true; giveTool(G, m.kind);
+        if (m.kind === 'foam') { G.flags.foamT = G.time; say('Маршал отдал пенный огнетушитель AFFF. Пена ложится плёнкой и охлаждает горячий карбон, чтобы не вспыхнул снова.', 'good'); }
+        else { G.flags.ext = true; G.flags.extT = G.time; say('Маршал отдал порошковый огнетушитель. Порошок за секунды сбивает открытое пламя!', 'good'); }
+      } })),
       { x: 613, y: 380, r: 30, label: G => G.flags.lamp ? null : 'Лампа', tap: G => {
         G.flags.lamp = true; SFX.knob();
         say('Лампа горит красным и не гаснет: от удара гибридная система сломалась. Болид под током до самого конца, воду на него нельзя!', 'bad');
@@ -44,7 +81,7 @@ LEVELS.push(
         e.fire = Math.max(0, e.fire - .45); if (e.fire < .05) e.fire = 0; e.wet = 3; e.heat = 0;
         for (let i = 0; i < 16; i++) G.parts.push({ k: 'puff', x: 680 + Math.random() * 200, y: 430 + Math.random() * 60, vx: (Math.random() - .5) * 80, vy: -30 - Math.random() * 40, life: 0, max: 1.6, r: 22 + Math.random() * 22 });
         SFX.puff(); SFX.hiss();
-        say('Кольцо «E»! Встроенный огнетушитель залил мотор и батарею пеной изнутри. Больше сам не загорится.', 'good');
+        say('Кольцо «E»! Встроенный огнетушитель залил батарею изнутри. Снаружи карбон ещё горячий: тут нужна пена.', 'good');
       } }
     ],
     items: [
@@ -61,7 +98,7 @@ LEVELS.push(
       lostMsg: 'Пилот сам сбросил руль, выпрыгнул и убежал к посту маршалов. Цел, но очень сердит!' },
     medals: [
       { id: 'redfirst', name: 'Сначала красный флаг', test: G => beforeThrow(G, G.flags.redT) },
-      { id: 'ering', name: 'Кольцо «E» сразу', test: G => G.flags.eringT != null && !G.flags.reignited },
+      { id: 'combo', name: 'Порошок, потом пена', test: G => G.flags.combo },
       { id: 'barrier', name: 'Барьер не загорелся', secret: true, hint: 'Шины в барьере горят долго и чёрным дымом', test: G => !G.burned.has('barrier') }
     ]
   }
