@@ -30,4 +30,5 @@ const ICON_ON = '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="
 const ICON_OFF = '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="#fff" stroke="#2a1a12" stroke-width="1.8" stroke-linejoin="round"/><path d="M16 9l5 6M21 9l-5 6" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>';
 $('btnMute').innerHTML = SFX.muted ? ICON_OFF : ICON_ON;
 $('btnMute').onclick = () => { $('btnMute').innerHTML = SFX.toggle() ? ICON_OFF : ICON_ON; };
+applyLang();
 show('title');

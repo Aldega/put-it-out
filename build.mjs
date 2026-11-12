@@ -12,6 +12,9 @@ const EPISODES = ['dom', 'dacha', 'gorod', 'transport'];
 
 const order = [
   'engine/core.js',
+  'engine/i18n.js',
+  'i18n/en.js',
+  'i18n/es.js',
   'scenes/common.js',
   ...dir('scenes', f => f.endsWith('.js') && f !== 'common.js'),
   'engine/tools.js',
