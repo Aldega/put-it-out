@@ -10,7 +10,7 @@ function finish(win) {
     SAVE.coins += coins; SAVE.best[L.id] = Math.max(SAVE.best[L.id] || 0, stars); store();
   }
   const next = L.star ? null : LEVELS[G.li + 1];
-  const P = $('panel');
+  const P = $('panel'); P.classList.remove('ahead');
   P.innerHTML = win ? `
     <span class="ribbon toon">${tl('Потушено!')}</span>
     <div class="bigstars">${STAR_CLASS(stars > 0)}${STAR_CLASS(stars > 1)}${STAR_CLASS(stars > 2)}</div>

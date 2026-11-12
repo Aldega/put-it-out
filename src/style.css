@@ -166,3 +166,20 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
 
 /* крупный план благодарности после победы: HUD прячем */
 #scrPlay.thanking .topbar, #scrPlay.thanking .tray, #scrPlay.thanking .bubble, #scrPlay.thanking .brief { visibility: hidden; }
+
+/* «Впереди»: карточки сложных уровней, которые ждут дальше */
+.panel.ahead { width: 84cqw; gap: 1.6cqw; padding-top: 4.6cqw; }
+.panel.ahead .lesson { font-size: 1.8cqw; }
+.arow { display: flex; align-items: center; gap: .6cqw; }
+.adots { width: 3cqw; height: .8cqw; flex: none; background: radial-gradient(circle, var(--ink) 0 40%, transparent 45%) 0 50% / 1cqw .8cqw repeat-x; }
+.acard { position: relative; width: 24cqw; padding: .8cqw .8cqw 1.2cqw; border: .45cqw solid var(--ink); border-radius: 1.8cqw; background: var(--cream); box-shadow: 0 .6cqw 0 var(--ink); display: flex; flex-direction: column; align-items: center; gap: .3cqw; color: var(--ink); transition: transform .12s; }
+.acard:nth-of-type(1) { transform: rotate(-2deg); }
+.acard:nth-of-type(3) { transform: rotate(2deg); }
+.acard:hover:not(:disabled) { transform: scale(1.05) rotate(-1deg); }
+.acard canvas { position: static; width: 100%; height: auto; aspect-ratio: 360 / 220; border: .35cqw solid var(--ink); border-radius: 1.2cqw; }
+.acard b { font-size: 2.2cqw; font-weight: 900; }
+.acard span { font-size: 1.35cqw; font-weight: 600; line-height: 1.25; text-align: center; min-height: 3.4cqw; }
+.acard.locked { cursor: default; }
+.acard.locked canvas { filter: saturate(.55) brightness(.75); }
+.acard.locked span { font-size: 1.8cqw; font-weight: 900; color: var(--red-d); }
+.acard svg.lock { position: absolute; top: 1.6cqw; right: 1.6cqw; width: 4.6cqw; height: 4.6cqw; filter: drop-shadow(0 .4cqw 0 rgba(0,0,0,.35)); }
