@@ -90,7 +90,7 @@ function drawGasFixtures(G) {
 function gasGauge(G) {
   rr(30, 110, 200, 40, 20); toon('#fff6e4', 4);
   rr(36, 116, Math.max(0, 188 * G.gas / 100), 28, 14); ctx.fillStyle = G.gas > 60 ? '#e63b2e' : '#9bd65a'; ctx.fill();
-  tex(ctx, 130, 131, `Газ ${Math.round(G.gas)}%`, 20, INK);
+  tex(ctx, 130, 131, tl('Газ {0}%', Math.round(G.gas)), 20, INK);
 }
 
 

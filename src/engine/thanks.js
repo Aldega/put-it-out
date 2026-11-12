@@ -66,10 +66,10 @@ function thxStart(G) {
   let say = E.say, hint = '', soot = .5, item = null;
   if (T && !saved) {
     // живое цело, просто удрало само; вещь пропала, но хозяин всё равно рад, что пожар потушен
-    if (T.flee) { say = E.fled || 'Фух! Удрал сам!'; soot = 1; hint = `Попробуй спасти ${E.acc || T.acc} сразу`; }
-    else { say = 'Спасибо! Пожар потушен!'; hint = `А ${T.acc} можно было спасти`; }
+    if (T.flee) { say = E.fled || 'Фух! Удрал сам!'; soot = 1; hint = tl('Попробуй спасти {0} сразу', E.acc || T.acc); }
+    else { say = 'Спасибо! Пожар потушен!'; hint = tl('А {0} можно было спасти', T.acc); }
   } else if (T && !T.flee) item = { T, fit: E.item || [1] };
-  G.thx = { t0: time, who: E.who, say, hint, soot, item };
+  G.thx = { t0: time, who: E.who, say: tl(say), hint, soot, item };
 }
 
 // ---------- детали портрета (координаты от центра головы, голова человека ~100) ----------

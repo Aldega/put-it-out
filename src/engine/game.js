@@ -11,18 +11,18 @@ function startLevel(i) {
   show('play'); renderTray();
   // пауза на план: огонь замер, игрок читает вводные и осматривает сцену. Повторно уровень короче
   G.plan = G.planMax = SAVE.best[L.id] ? 3 : 5;
-  $('bubble').style.opacity = 0; $('briefTxt').textContent = L.intro; $('brief').hidden = false; planTick();
+  $('bubble').style.opacity = 0; $('briefTxt').textContent = tl(L.intro); $('brief').hidden = false; planTick();
 }
-function planTick() { const n = Math.ceil(G.plan); $('briefN').textContent = n; $('brief').style.setProperty('--p', (1 - G.plan / G.planMax) * 100 + '%'); $('timer').textContent = 'План ' + n; }
+function planTick() { const n = Math.ceil(G.plan); $('briefN').textContent = n; $('brief').style.setProperty('--p', (1 - G.plan / G.planMax) * 100 + '%'); $('timer').textContent = tl('План {0}', n); }
 // конец паузы: по таймеру, по кнопке «Начать» или с первым действием игрока
-function beginPlay() { if (!G || !G.plan) return; G.plan = 0; $('brief').hidden = true; $('timer').textContent = '0.0 с'; say(G.L.intro, ''); SFX.click(); }
+function beginPlay() { if (!G || !G.plan) return; G.plan = 0; $('brief').hidden = true; $('timer').textContent = tl('{0} с', '0.0'); say(G.L.intro, ''); SFX.click(); }
 $('briefGo').onclick = (e) => { e.stopPropagation(); beginPlay(); };
 function renderTray() {
   const tray = $('tray'); tray.innerHTML = '';
   // свои средства игрока, плюс найденные в сцене (G.bonus), минус те, которых тут нет (L.noTools)
   Object.entries(TOOLS).filter(([id]) => (SAVE.owned.includes(id) || G.bonus.has(id)) && !(G.L.noTools || []).includes(id)).forEach(([id, t]) => {
     const b = document.createElement('button'); b.className = 'tool'; b.id = 'tool-' + id; b.setAttribute('aria-pressed', G.tool === id);
-    b.innerHTML = `<span class="ball">${t.icon}<span class="cd"></span></span><span class="lab">${t.short || t.name}</span>`;
+    b.innerHTML = `<span class="ball">${t.icon}<span class="cd"></span></span><span class="lab">${tl(t.short || t.name)}</span>`;
     b.onclick = (e) => { e.stopPropagation(); if (!G || G.over) return; beginPlay(); G.tool = id; document.querySelectorAll('.tool').forEach(x => x.setAttribute('aria-pressed', x === b));
       const hot = G.items.filter(it => it.fire > 0).sort((a, b2) => b2.fire * b2.value - a.fire * a.value)[0];
       if (hot) act({ x: hot.aimAt[0], y: hot.aimAt[1] }, true); else say('Огня нет. Подумай, что ещё нужно сделать.', ''); };
@@ -30,7 +30,7 @@ function renderTray() {
   });
 }
 let sayT = 0;
-function say(text, kind) { const b = $('bubble'); b.textContent = text; b.className = 'bubble ' + (kind || ''); b.style.opacity = 1; sayT = 4.5; }
+function say(text, kind) { const b = $('bubble'); b.textContent = tl(text); b.className = 'bubble ' + (kind || ''); b.style.opacity = 1; sayT = 4.5; }
 
 // предметы, которых можно коснуться
 function hotAt(p) {
@@ -183,7 +183,7 @@ function update(dt) {
   // связь [a, b, скорость, обратно]: обратно = множитель скорости от b к a (ветер дует от a к b)
   for (const [a, b, rate, back = 1] of L.links) for (const [x, y, r] of [[a, b, rate], [b, a, rate * back]]) {
     const A = G.byId[x], B = G.byId[y];
-    if (A.fire > .3 && B.fire === 0 && B.wet <= 0 && !B.safe && (!L.linkOk || L.linkOk(G, x, y))) { B.heat += A.fire * r * sb * dt; if (B.heat >= 1) { B.fire = .15; B.heat = 0; SFX.spread(); say(`Огонь перекинулся на ${B.name}!`, 'bad'); } }
+    if (A.fire > .3 && B.fire === 0 && B.wet <= 0 && !B.safe && (!L.linkOk || L.linkOk(G, x, y))) { B.heat += A.fire * r * sb * dt; if (B.heat >= 1) { B.fire = .15; B.heat = 0; SFX.spread(); say(tl('Огонь перекинулся на {0}!', B.name), 'bad'); } }
   }
   if (L.tick) L.tick(G, dt);
   tickExtras(G, dt);
@@ -200,7 +200,7 @@ function update(dt) {
   } else { G.calm = 0; }
   if (G.dmg >= 100) { G.dmg = 100; finish(false); }
   $('meter').style.width = G.dmg + '%';
-  $('timer').textContent = G.time.toFixed(1) + ' с';
+  $('timer').textContent = tl('{0} с', G.time.toFixed(1));
   for (const id in TOOLS) { const el = document.querySelector(`#tool-${id} .cd`); if (el) el.style.setProperty('--p', ((G.cds[id] || 0) / TOOLS[id].cd * 100) + '%'); }
   sayT -= dt; if (sayT < 0) $('bubble').style.opacity = .0;
 }
