@@ -46,9 +46,42 @@ function renderMap() {
     b.onclick = () => startLevel(i); b.setAttribute('aria-label', `Особый уровень: ${lv.name}`);
     box.appendChild(b);
   });
+  // «Впереди»: после первых лёгких уровней показываем, куда ведёт игра
+  $('btnAhead').hidden = !aheadOpen();
+  if (aheadOpen() && !SAVE.seenAhead) { SAVE.seenAhead = 1; store(); setTimeout(() => { if (mode === 'map' && $('popup').hidden) openAhead(true); }, 500); }
 }
+// ================== «Впереди»: сложные уровни, которые ждут дальше ==================
+// lv: id уровня, если он уже есть в игре (сейчас это уровни со звёздочкой, открытые для тестировщиков)
+const AHEAD = [
+  { lv: 'f1', name: 'Болид Ф-1', hint: 'Пожар на пит-стопе, пилот ещё в кокпите', draw: ahF1 },
+  { lv: 'rocket', name: 'Ракета', hint: 'Двигатель загорелся на испытаниях', draw: ahRocket },
+  { name: 'Атомная станция', hint: 'Самый опасный пожар в игре', draw: ahNuke, soon: true },
+];
+const AHEAD_AFTER = 3; // сколько уровней первого эпизода пройти, чтобы открылось «Впереди»
+function aheadOpen() { return LEVELS.filter(l => !l.star).slice(0, AHEAD_AFTER).every(l => SAVE.best[l.id] > 0); }
+function openAhead(first) {
+  const P = $('panel'); P.className = 'panel ahead';
+  const cards = AHEAD.map((a, k) => {
+    const i = a.lv ? LEVELS.findIndex(l => l.id === a.lv) : -1, play = i >= 0 && unlocked(i);
+    return `<button class="acard${play ? '' : ' locked'}" data-i="${i}" ${play ? '' : 'disabled'} aria-label="${a.name}${play ? '' : ': скоро'}">
+      <canvas width="360" height="220" data-k="${k}"></canvas>${play ? '' : LOCK}
+      <b>${a.name}</b><span>${play ? a.hint : 'Скоро'}</span></button>`;
+  }).join('<i class="adots"></i>');
+  P.innerHTML = `<span class="ribbon toon">Впереди</span>
+    <p class="lesson">${first ? 'Это только начало! ' : ''}Дальше пожары будут всё круче. Тушить придётся то, что ты пока даже не видел вблизи.</p>
+    <div class="arow">${cards}</div>
+    <div class="prow"><button class="rbtn green" id="aheadOk" aria-label="Понятно"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
+  P.querySelectorAll('canvas').forEach(cv => {
+    const c = cv.getContext('2d'), d = window.devicePixelRatio > 1 ? 2 : 1; cv.width = AH_W * d; cv.height = AH_H * d;
+    c.setTransform(d, 0, 0, d, 0, 0); AHEAD[cv.dataset.k].draw(c);
+  });
+  P.querySelectorAll('.acard:not(:disabled)').forEach(b => b.onclick = () => { P.className = 'panel'; startLevel(+b.dataset.i); });
+  $('aheadOk').onclick = () => { P.className = 'panel'; $('popup').hidden = true; SFX.click(); };
+  $('popup').hidden = false; if (first) SFX.ding(); else SFX.click();
+}
+$('btnAhead').onclick = () => openAhead(false);
 function openShop() {
-  const P = $('panel');
+  const P = $('panel'); P.className = 'panel';
   const rows = Object.entries(TOOLS).filter(([, t]) => t.price > 0).map(([id, t]) => {
     const own = SAVE.owned.includes(id);
     return `<div class="shopitem"><span class="ball">${t.icon}</span><div class="si"><b>${t.name}</b><span>${t.desc}</span></div>
