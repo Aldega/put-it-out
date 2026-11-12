@@ -133,7 +133,7 @@ function drawRocketEngine(it, G) {
   for (const y of [A - 71, A + 71]) for (const x of [512, 540, 568]) { circ(x, y, 6); toon(mix('#9aa3ad', '#1e130d', k), 2); }
   // изогнутые трубки к коллектору сопла
   for (const s of [-1, 1]) {
-    ctx.beginPath(); ctx.moveTo(588, A + s * 72); ctx.bezierCurveTo(660, A + s * 110, 700, A + s * 70, 690, A + s * 40);
+    ctx.beginPath(); ctx.moveTo(588, A + s * 72); ctx.bezierCurveTo(660, A + s * 110, 716, A + s * 84, 711, A + s * 48);
     ctx.lineWidth = 16; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 9; ctx.strokeStyle = steel2; ctx.stroke();
   }
   // кольцо с болтами
@@ -141,17 +141,20 @@ function drawRocketEngine(it, G) {
   for (let i = 0; i < 5; i++) { circ(610, A - 36 + i * 18, 3.5); ctx.fillStyle = '#9aa3ad'; ctx.fill(); }
   // камера сгорания
   rr(620, A - 34, 44, 68, 10); toon(steel, 4);
-  // сопло-колокол
-  ctx.beginPath(); ctx.moveTo(660, A - 32); ctx.quadraticCurveTo(760, A - 46, 840, A - 106); ctx.lineTo(840, A + 106); ctx.quadraticCurveTo(760, A + 46, 660, A + 32); ctx.closePath(); toon(bell, 6);
-  ctx.beginPath(); ctx.moveTo(690, A - 30); ctx.quadraticCurveTo(770, A - 44, 830, A - 92); ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.stroke();
+  // сопло Лаваля: сужение к горлу, потом колокол. Стенки колокола выпуклые: сразу за горлом раструб быстро расширяется,
+  // к срезу почти выпрямляется (профиль Рао). Вогнутая «труба» тут была бы ошибкой
+  ctx.beginPath(); ctx.moveTo(660, A - 34); ctx.quadraticCurveTo(668, A - 22, 676, A - 22);
+  ctx.bezierCurveTo(706, A - 22, 744, A - 98, 840, A - 108); ctx.lineTo(840, A + 108);
+  ctx.bezierCurveTo(744, A + 98, 706, A + 22, 676, A + 22); ctx.quadraticCurveTo(668, A + 22, 660, A + 34); ctx.closePath(); toon(bell, 6);
+  ctx.beginPath(); ctx.moveTo(700, A - 30); ctx.bezierCurveTo(722, A - 46, 752, A - 88, 828, A - 96); ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.stroke();
   // кольцо коллектора на сопле
-  rr(684, A - 46, 14, 92, 5); toon(steel2, 3);
+  rr(704, A - 50, 14, 100, 5); toon(steel2, 3);
   rr(832, A - 112, 16, 224, 6); toon(mix('#3a3f48', '#140c08', k * .6), 4);
   tex(ctx, 770, A + 6, 'Д-1', 18, mix('#ffffff', '#555555', k));
   // раскалённое горло и свечение внутри сопла, пока двигатель работает
   if (run > 0) {
     ell(842, A, 10, 100); ctx.fillStyle = `rgba(255,230,190,${.85 * run})`; ctx.fill();
-    ell(664, A, 10, 30); ctx.fillStyle = `rgba(255,140,60,${.7 * run})`; ctx.fill();
+    ell(676, A, 8, 22); ctx.fillStyle = `rgba(255,140,60,${.7 * run})`; ctx.fill();
   }
   // утечка: из-под турбонасоса бьют искры, пока клапаны открыты
   if (!G.flags.stop && Math.random() < .25) sparks(G, 560 + Math.random() * 40, A - 90, 2);
