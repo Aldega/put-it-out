@@ -42,6 +42,7 @@ const SFX = (() => {
     unplug() { tone(1400, .04, 'square', .15); tone(220, .15, 'sine', .35, .03, 120); },
     spread() { noise(.7, 'lowpass', 200, 1400, .5, .15); tone(90, .6, 'sine', .3, 0, 160); },
     win() { [523, 659, 784, 1046].forEach((f, i) => { tone(f, .3, 'triangle', .25, i * .12); tone(f * 2, .2, 'sine', .06, i * .12); }); },
+    thanks() { [784, 988, 1175, 1568].forEach((f, i) => tone(f, .22, 'sine', .18, i * .09)); tone(2093, .5, 'triangle', .1, .4); for (let i = 0; i < 4; i++) tone(2600 + i * 400, .08, 'sine', .05, .5 + i * .07); },
     star(i) { tone(880 * Math.pow(1.26, i), .5, 'sine', .25, 0); tone(1760 * Math.pow(1.26, i), .3, 'sine', .08, .02); },
     knob() { tone(900, .03, 'square', .12); tone(600, .05, 'square', .1, .06); tone(300, .12, 'sine', .25, .06, 200); },
     creak() { tone(180, .45, 'sawtooth', .05, 0, 260); noise(.4, 'bandpass', 600, 900, .12, .05, 4); tone(120, .15, 'sine', .3, .4, 80); },

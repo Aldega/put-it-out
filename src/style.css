@@ -160,3 +160,6 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
 .node.star .n { display: grid; place-items: center; width: 6cqw; height: 6cqw; border-radius: 50%; background: linear-gradient(#ff5a8a, #c2185b); border: .4cqw solid var(--ink); color: var(--gold); font-size: 4cqw; }
 .node.star .nm { opacity: 1; background: var(--gold); }
 .node.star:hover .n { transform: rotate(18deg); }
+
+/* крупный план благодарности после победы: HUD прячем */
+#scrPlay.thanking .topbar, #scrPlay.thanking .tray, #scrPlay.thanking .bubble, #scrPlay.thanking .brief { visibility: hidden; }
