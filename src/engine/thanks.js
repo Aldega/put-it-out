@@ -4,7 +4,7 @@
 // Если ценность была вещью, благодарит хозяин и держит её в руках. Без вещи хозяин просто благодарит за потушенный пожар.
 //
 // THANKS[id уровня] = { who, say, fled?, item? }
-//   who: портрет { k: 'human' | 'cat' | 'dog' | 'hamster' | 'hedgehog' | 'bird' | 'nest' | 'cow', ...цвета } или { group: [{ who, x, y, s }] }
+//   who: портрет { k: 'human' | 'cat' | 'dog' | 'hamster' | 'hedgehog' | 'bird' | 'nest' | 'cow' | 'pilot', ...цвета } или { group: [{ who, x, y, s }] }
 //   say: реплика, fled: реплика, если живое удрало само, acc: кого спасать (для подсказки), item: [масштаб, сдвиг x, сдвиг y] вещи в руках хозяина
 
 const SKIN = '#ffcfa3';
@@ -55,8 +55,8 @@ const THANKS = {
   fuel: { who: { k: 'dog', fur: '#d9a066', ear: '#7a4a2a', light: '#f4e2c4' }, say: 'Гав! Спасибо!' },
   station: { who: { k: 'human', hair: '#5a3a22', style: 'short', shirt: '#2b6cb0', hat: 'cap', hatCol: '#2b6cb0', mustache: '#5a3a22' }, say: 'Спасибо! Посылки дойдут!', item: [1] },
   // со звёздочкой
-  f1: { who: { k: 'human', hat: 'pilot', shirt: F1_COL }, say: 'Спасибо, команда!', fled: PEOPLE_FLED },
-  f1crash: { who: { k: 'human', hat: 'pilot', shirt: F1_COL }, say: 'Спасибо, команда!', fled: PEOPLE_FLED },
+  f1: { who: { k: 'pilot', suit: F1_COL, helmet: '#e63b2e' }, say: 'Спасибо, команда!', fled: PEOPLE_FLED },
+  f1crash: { who: { k: 'pilot', suit: F1_COL, helmet: '#e63b2e' }, say: 'Спасибо, команда!', fled: PEOPLE_FLED },
   rocket: { who: { k: 'cow' }, say: 'Му-у! Спасибо!' },
 };
 
@@ -198,6 +198,54 @@ function thxHuman(w, ph, X) {
   if (w.hat !== 'pilot') thxWisps(20, -120, X.soot);
 }
 
+// гонщик: настоящий закрытый шлем с поднятым визором, балаклава, комбинезон команды и HANS на плечах
+function thxPilot(w, ph, X) {
+  const suit = w.suit || F1_COL, hc = w.helmet || '#e63b2e', glove = '#f4efe6';
+  // комбинезон
+  ctx.beginPath(); ctx.moveTo(-180, 460); ctx.quadraticCurveTo(-185, 160, -62, 128); ctx.lineTo(62, 128); ctx.quadraticCurveTo(185, 160, 180, 460); ctx.closePath(); toon(suit, 7);
+  ctx.save(); ctx.beginPath(); ctx.moveTo(-180, 460); ctx.quadraticCurveTo(-185, 160, -62, 128); ctx.lineTo(62, 128); ctx.quadraticCurveTo(185, 160, 180, 460); ctx.closePath(); ctx.clip();
+  for (const s of [-1, 1]) { ctx.beginPath(); ctx.moveTo(s * 175, 250); ctx.lineTo(s * 60, 470); ctx.lineWidth = 30; ctx.strokeStyle = F1_STRIPE; ctx.stroke(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.beginPath(); ctx.moveTo(s * 175 - 13, 243); ctx.lineTo(s * 60 - 13, 463); ctx.moveTo(s * 175 + 13, 257); ctx.lineTo(s * 60 + 13, 477); ctx.stroke(); }
+  ctx.restore();
+  ctx.beginPath(); ctx.moveTo(0, 150); ctx.lineTo(0, 460); ctx.lineWidth = 5; ctx.strokeStyle = INK; ctx.stroke();
+  // нашивки спонсоров
+  rr(-150, 300, 96, 34, 8); toon('#ffffff', 5); tex(ctx, -102, 318, 'ОГОНЁК', 18, '#e63b2e');
+  rr(48, 300, 78, 30, 8); toon('#3fa9f5', 5); tex(ctx, 87, 316, '7', 22, '#ffffff');
+  // HANS: карбоновая подкова на плечах и ремешки к шлему
+  for (const s of [-1, 1]) { ell(s * 108, 158, 66, 24, ctx, s * .32); toon('#2f3540', 6); }
+  rr(-64, 118, 128, 30, 12); toon('#2f3540', 6);
+  thxArm(150, 185, 200, 50, suit, 'hand', ph, glove);
+  // шлем
+  const shell = () => { ctx.beginPath(); ctx.moveTo(-122, 104); ctx.bezierCurveTo(-152, 30, -150, -172, 0, -174); ctx.bezierCurveTo(150, -172, 152, 30, 122, 104); ctx.quadraticCurveTo(108, 136, 58, 138); ctx.lineTo(-58, 138); ctx.quadraticCurveTo(-108, 136, -122, 104); ctx.closePath(); };
+  rr(-30, -194, 60, 28, 10); toon('#2f3540', 5); // воздухозаборник сверху
+  shell(); toon(hc, 7);
+  ctx.save(); shell(); ctx.clip();
+  // ливрея: белая волна и жёлтый кант, блик
+  ctx.beginPath(); ctx.moveTo(-160, -40); ctx.quadraticCurveTo(-60, -150, 160, -150); ctx.lineTo(160, -200); ctx.lineTo(-160, -200); ctx.closePath(); ctx.fillStyle = '#ffffff'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-160, -40); ctx.quadraticCurveTo(-60, -150, 160, -150); ctx.lineWidth = 14; ctx.strokeStyle = F1_STRIPE; ctx.stroke(); ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-160, 60); ctx.quadraticCurveTo(0, 30, 160, 60); ctx.lineWidth = 12; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+  ctx.restore();
+  shell(); ctx.lineWidth = 7; ctx.strokeStyle = INK; ctx.stroke();
+  ctx.save(); ctx.globalAlpha = .45; ell(-78, -112, 42, 16, ctx, -.7); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.restore();
+  // проём: балаклава из несгораемой ткани, видны только глаза
+  rr(-102, -50, 204, 86, 34); toon('#2f3540', 6);
+  rr(-90, -40, 180, 66, 28); toon('#f1ede4', 4);
+  rr(-74, -31, 148, 46, 20); toon(w.skin || SKIN, 4);
+  ctx.lineWidth = 5; ctx.strokeStyle = '#6a4a32'; ctx.lineCap = 'round';
+  for (const s of [-1, 1]) { ctx.beginPath(); ctx.arc(s * 34, -6, 18, Math.PI * 1.3, Math.PI * 1.7); ctx.stroke(); }
+  thxEyes(-6, 34, 11, ph);
+  // щёки приподняты: улыбается под подбородником
+  ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(42,26,18,.55)';
+  for (const s of [-1, 1]) { ctx.beginPath(); ctx.arc(s * 34, 22, 14, Math.PI * 1.2, Math.PI * 1.8); ctx.stroke(); }
+  // поднятый тонированный визор и его оси
+  rr(-114, -100, 228, 50, 24); ctx.fillStyle = 'rgba(58,74,104,.85)'; ctx.fill(); ctx.lineWidth = 6; ctx.strokeStyle = INK; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-80, -86); ctx.lineTo(40, -86); ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.stroke();
+  rr(-130, -82, 22, 16, 5); toon('#ffffff', 4); // язычок отрывной плёнки
+  for (const s of [-1, 1]) { circ(s * 122, -50, 14); toon('#9aa3ad', 5); circ(s * 122, -50, 4); ctx.fillStyle = INK; ctx.fill(); }
+  // подбородник: вентиляция и наклейка команды
+  for (const s of [-1, 1]) { rr(s * 52 - 16, 50, 32, 12, 6); toon('#2f3540', 4); }
+  rr(-64, 78, 128, 32, 10); toon('#ffffff', 5); tex(ctx, 0, 95, 'ОГОНЁК', 22, '#e63b2e');
+  thxSoot([[-96, 60, 24, 13, .3], [76, -128, 24, 11, -.2], [40, 118, 12, 7]], X.soot);
+}
 function thxCat(w, ph, X) {
   // хвост виляет
   const tw = Math.sin(time * 4 + ph) * 30;
@@ -313,7 +361,7 @@ function thxCow(w, ph, X) {
   thxWisps(0, -150, X.soot);
 }
 
-const THX_DRAW = { human: thxHuman, cat: thxCat, dog: thxDog, hamster: thxHamster, hedgehog: thxHedgehog, bird: thxBird, nest: thxNest, cow: thxCow };
+const THX_DRAW = { human: thxHuman, cat: thxCat, dog: thxDog, hamster: thxHamster, hedgehog: thxHedgehog, bird: thxBird, nest: thxNest, cow: thxCow, pilot: thxPilot };
 function thxWho(w, ph, X) {
   if (w.group) { w.group.forEach((m, i) => { ctx.save(); ctx.translate(m.x, m.y); ctx.scale(m.s, m.s); thxWho(m.who, ph + i * 1.7, X); ctx.restore(); }); return; }
   ctx.save(); if (w.s) ctx.scale(w.s, w.s);

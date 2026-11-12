@@ -11,7 +11,10 @@ const TOOLS = {
     icon: '<svg viewBox="0 0 48 48"><path d="M8 10h32v24c-6 4-10-2-16 2s-10-2-16 2z" fill="#c8434f" stroke="#2a1a12" stroke-width="3" stroke-linejoin="round"/><path d="M8 10h32" stroke="#2a1a12" stroke-width="3"/><path d="M14 16v14M22 16v14M30 16v14" stroke="#ffd23f" stroke-width="2.5" stroke-linecap="round"/></svg>' },
   powder: { name: 'Огнетушитель ОП-4', short: 'Порошок', power: .6, radius: 160, cd: 1.1, color: '#ffffff', price: 150,
     desc: 'Порошковый огнетушитель ОП-4. Тушит почти всё, даже электроприборы под напряжением.',
-    icon: '<svg viewBox="0 0 48 48"><rect x="15" y="14" width="18" height="30" rx="7" fill="#e63b2e" stroke="#2a1a12" stroke-width="3"/><rect x="17" y="24" width="14" height="8" rx="2" fill="#fff" stroke="#2a1a12" stroke-width="2"/><path d="M20 14V8h10l6 4" fill="none" stroke="#2a1a12" stroke-width="3" stroke-linejoin="round"/><path d="M36 12c4 2 6 6 4 10" fill="none" stroke="#2a1a12" stroke-width="3" stroke-linecap="round"/></svg>' }
+    icon: '<svg viewBox="0 0 48 48"><rect x="15" y="14" width="18" height="30" rx="7" fill="#e63b2e" stroke="#2a1a12" stroke-width="3"/><rect x="17" y="24" width="14" height="8" rx="2" fill="#fff" stroke="#2a1a12" stroke-width="2"/><path d="M20 14V8h10l6 4" fill="none" stroke="#2a1a12" stroke-width="3" stroke-linejoin="round"/><path d="M36 12c4 2 6 6 4 10" fill="none" stroke="#2a1a12" stroke-width="3" stroke-linecap="round"/></svg>' },
+  foam: { name: 'Пенный огнетушитель AFFF', short: 'Пена', power: .4, radius: 150, cd: 1.2, color: '#fff8e6', price: 0,
+    desc: 'Пена AFFF растекается плёнкой по горящему топливу и охлаждает горячий металл, чтобы огонь не вспыхнул снова.',
+    icon: '<svg viewBox="0 0 48 48"><rect x="15" y="14" width="18" height="30" rx="7" fill="#f4efe6" stroke="#2a1a12" stroke-width="3"/><rect x="15" y="22" width="18" height="10" fill="#3fa9f5" stroke="#2a1a12" stroke-width="2"/><path d="M20 14V8h10l6 4" fill="none" stroke="#2a1a12" stroke-width="3" stroke-linejoin="round"/><path d="M36 12c4 2 6 6 4 10" fill="none" stroke="#2a1a12" stroke-width="3" stroke-linecap="round"/><circle cx="41" cy="26" r="3" fill="#fff" stroke="#2a1a12" stroke-width="2"/><circle cx="44" cy="31" r="2.5" fill="#fff" stroke="#2a1a12" stroke-width="2"/></svg>' }
 };
 const LABEL_PLUG = 'Выдернуть вилку';
 

@@ -74,6 +74,7 @@ function drawParts(dt) {
     if (p.k === 'fb') { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= .97; p.vy *= .97; const r = p.r * (1 + k * .8);
       circ(p.x, p.y, r); ctx.fillStyle = `rgba(238,75,35,${1 - k})`; ctx.fill(); circ(p.x, p.y, r * .7); ctx.fillStyle = `rgba(255,157,31,${1 - k})`; ctx.fill(); circ(p.x, p.y, r * .4); ctx.fillStyle = `rgba(255,228,92,${1 - k})`; ctx.fill(); continue; }
     if (p.k === 'ring') { circ(p.x, p.y, 40 + k * 420); ctx.lineWidth = 18 * (1 - k); ctx.strokeStyle = `rgba(255,230,150,${1 - k})`; ctx.stroke(); continue; }
+    if (p.k === 'foam') { const a = Math.min(1, (1 - k) * 3); ctx.globalAlpha = a; circ(p.x, p.y, p.r * (.6 + Math.min(1, k * 8) * .4)); toon('#fff8e6', 2); circ(p.x - p.r * .3, p.y - p.r * .3, p.r * .25); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.globalAlpha = 1; continue; }
     if (p.k === 'puff') { p.x += p.vx * dt; p.y += p.vy * dt; p.r += dt * 30; circ(p.x, p.y, p.r); ctx.fillStyle = `rgba(255,255,255,${(1 - k) * .75})`; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = `rgba(42,26,18,${(1 - k) * .25})`; ctx.stroke(); continue; }
     if (p.k === 'bolt') { if (Math.floor(p.life * 30) % 3 !== 2) drawBolt(p.x, p.y, p.tx, p.ty, p.w || 1); continue; }
     if (p.k === 'zapfx') { ctx.fillStyle = `rgba(120,200,255,${(1 - k) * .35})`; ctx.fillRect(0, 0, VW, VH); const r = 60 + k * 220; circ(p.x, p.y, r); ctx.lineWidth = 10 * (1 - k); ctx.strokeStyle = '#ffe45c'; ctx.stroke(); continue; }

@@ -128,8 +128,8 @@ function drawF1Pilot(G, t) {
     rr(x - 22, y + 14, 44, 36, 12); toon(F1_COL, 4); rr(x - 22, y + 26, 44, 8, 3); toon(F1_STRIPE, 2);
   } else { ell(x, y + 24, 30, 12); toon(F1_COL, 4); }
   // шлем, визор смотрит влево по ходу машины
-  circ(x, y, 24); toon('#ffffff', 4);
-  ctx.beginPath(); ctx.arc(x, y, 24, Math.PI * 1.15, Math.PI * 1.85); ctx.lineWidth = 7; ctx.strokeStyle = F1_STRIPE; ctx.stroke();
+  circ(x, y, 24); toon('#e63b2e', 4);
+  ctx.beginPath(); ctx.arc(x, y, 24, Math.PI * 1.15, Math.PI * 1.85); ctx.lineWidth = 7; ctx.strokeStyle = '#ffffff'; ctx.stroke();
   rr(x - 24, y - 6, 28, 13, 6); toon('#2f3540', 3); rr(x - 18, y - 4, 10, 4, 2); ctx.fillStyle = '#9fd8f5'; ctx.fill();
   if (here) {
     // руль перед пилотом
@@ -140,9 +140,9 @@ function drawF1Pilot(G, t) {
   ctx.restore();
 }
 
-// маршал в оранжевом: держит огнетушитель, пока не отдал (G.flags.ext)
-function f1Marshal(G, x, y) {
-  const give = G.flags.ext;
+// маршал в оранжевом: держит огнетушитель (kind: 'powder' красный, 'foam' белый с синей полосой), пока не отдал
+function f1Marshal(G, x, y, gave = G.flags.ext, kind = 'foam') {
+  const give = gave;
   rr(x - 18, y + 70, 14, 52, 5); toon('#ff9d1f', 4); rr(x + 4, y + 70, 14, 52, 5); toon('#ff9d1f', 4);
   rr(x - 24, y + 116, 22, 12, 5); toon(INK, 3); rr(x + 2, y + 116, 22, 12, 5); toon(INK, 3);
   rr(x - 28, y - 4, 56, 82, 14); toon('#ff9d1f', 5); rr(x - 28, y + 30, 56, 10, 3); toon('#ffffff', 3);
@@ -151,7 +151,9 @@ function f1Marshal(G, x, y) {
   ctx.beginPath(); ctx.arc(x, y - 16, 7, .2, Math.PI - .2); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.stroke();
   if (!give) {
     // держит огнетушитель и ждёт
-    rr(x - 66, y + 14, 30, 64, 12); toon('#e63b2e', 4); rr(x - 60, y + 30, 18, 14, 3); toon('#ffffff', 2); rr(x - 58, y + 4, 14, 12, 3); toon(INK, 2);
+    if (kind === 'foam') { rr(x - 66, y + 14, 30, 64, 12); toon('#f4efe6', 4); rr(x - 66, y + 32, 30, 16, 2); toon('#3fa9f5', 3); }
+    else { rr(x - 66, y + 14, 30, 64, 12); toon('#e63b2e', 4); rr(x - 60, y + 30, 18, 14, 3); toon('#ffffff', 2); }
+    rr(x - 58, y + 4, 14, 12, 3); toon(INK, 2);
     ctx.beginPath(); ctx.moveTo(x - 24, y + 10); ctx.lineTo(x - 44, y + 34); ctx.moveTo(x + 24, y + 10); ctx.lineTo(x - 30, y + 50); ctx.lineWidth = 11; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = '#ff9d1f'; ctx.stroke();
   } else {
     // показывает «класс»
