@@ -20,6 +20,7 @@ function frame(now) {
     for (const it of G.items) glow(it);
     for (const it of G.items) if (!it.noFlame) drawFire(it, time);
     drawParts(dt); drawThrows(); drawAim();
+    drawThanks(G);
     G.time = G.time; G.timeAnim = time;
   }
   requestAnimationFrame(frame);

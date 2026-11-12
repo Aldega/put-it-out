@@ -25,6 +25,7 @@ const order = [
   'engine/screens.js',
   'engine/game.js',
   'engine/fire.js',
+  'engine/thanks.js',
   'engine/finish.js',
   'engine/main.js',
 ];

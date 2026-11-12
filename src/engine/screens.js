@@ -3,7 +3,7 @@ let mode = 'title', G = null, time = 0, curEp = 0;
 if (!SAVE.owned) SAVE.owned = ['water', 'sand', 'lid'];
 function show(m) {
   mode = m;
-  $('scrTitle').hidden = m !== 'title'; $('scrMap').hidden = m !== 'map'; $('scrPlay').hidden = m !== 'play'; $('popup').hidden = true;
+  $('scrTitle').hidden = m !== 'title'; $('scrMap').hidden = m !== 'map'; $('scrPlay').hidden = m !== 'play'; $('popup').hidden = true; $('scrPlay').classList.remove('thanking');
   if (m === 'map') renderMap();
 }
 $('btnPlay').onclick = () => { const i = LEVELS.findIndex((l, i) => !l.star && unlocked(i) && !SAVE.best[l.id]); curEp = i < 0 ? EPISODES.length - 1 : LEVELS[i].ep; show('map'); };

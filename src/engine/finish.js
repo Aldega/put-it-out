@@ -32,7 +32,10 @@ function finish(win) {
     </div>`;
   P.classList.toggle('tight', !!(win && med && med.all.length));
   P.querySelectorAll('.bigstars svg.on').forEach((s, i) => s.style.animationDelay = (.25 + i * .35) + 's');
-  setTimeout(() => { $('popup').hidden = false; if (win) { SFX.win(); for (let i = 0; i < stars; i++) setTimeout(() => SFX.star(i), 250 + i * 350); } else SFX.lose(); }, win ? 700 : 400);
+  // при победе сначала крупный план: спасённый благодарит (engine/thanks.js), потом итоги. Касание экрана пропускает
+  const g = G, pop = () => { if (G !== g || g.popped) return; g.popped = true; $('popup').hidden = false; if (win) { SFX.win(); for (let i = 0; i < stars; i++) setTimeout(() => SFX.star(i), 250 + i * 350); } else SFX.lose(); };
+  if (win) { thxStart(G); G.thx.skip = pop; $('scrPlay').classList.add('thanking'); setTimeout(() => { if (G === g && !g.popped) SFX.thanks(); }, 450); setTimeout(pop, 3600); }
+  else setTimeout(pop, 400);
   $('pMap').onclick = () => { G = null; show('map'); };
   $('pAgain').onclick = () => startLevel(G.li);
   if (next && win) $('pNext').onclick = () => startLevel(G.li + 1);
