@@ -34,5 +34,5 @@ function gasBlast(G, msg) {
   G.mistakes++; G.dmg += 20; G.gas = 0; G.flags.light = false;
   blast(660, 400);
   G.byId.towel.fire = .5; G.byId.curtain.fire = .4;
-  say(msg + ' Туши пожар.', 'bad');
+  say(tl(msg) + tl(' Туши пожар.'), 'bad');
 }

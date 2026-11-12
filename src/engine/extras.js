@@ -15,7 +15,7 @@ function initExtras(G) {
 function treasureHot(p) {
   const t = G.tr;
   // gate(G): если вернул false, спасать ещё рано (уровень сам сделал шаг и сказал, что дальше); gateLabel(G): подпись вместо «Спасти ...»
-  if (t && t.state === 'here' && Math.hypot(p.x - t.x, p.y - t.y) < t.r) return { x: t.x, y: t.y, r: t.r, label: (t.gateLabel && t.gateLabel(G)) || 'Спасти ' + t.acc, h: { tap: G => { if (!t.gate || t.gate(G)) saveTreasure(G); } } };
+  if (t && t.state === 'here' && Math.hypot(p.x - t.x, p.y - t.y) < t.r) return { x: t.x, y: t.y, r: t.r, label: (t.gateLabel && t.gateLabel(G)) || tl('Спасти {0}', t.acc), h: { tap: G => { if (!t.gate || t.gate(G)) saveTreasure(G); } } };
   return null;
 }
 function saveTreasure(G) { const t = G.tr; t.savedT = G.time; t.state = 'flying'; t.fly = 0; SFX.cloth(); say(typeof t.savedMsg === 'function' ? t.savedMsg(G) : t.savedMsg, 'good'); }
@@ -27,7 +27,7 @@ function tickExtras(G, dt) {
     const it = G.byId[t.near];
     if (it.fire > .3) {
       // предупреждаем не сразу, чтобы игрок успел прочитать вступление; знак «!» мигает с самого начала
-      if (!t.warned && G.time > 3) { t.warned = true; say(`${t.name} в опасности! Коснись, чтобы вынести.`, 'bad'); }
+      if (!t.warned && G.time > 3) { t.warned = true; say(tl('{0} в опасности! Коснись, чтобы вынести.', t.name), 'bad'); }
       t.burn += dt * it.fire;
       if (t.burn > t.burnTime) {
         G.dmg += 10; say(t.lostMsg, 'bad');
@@ -67,9 +67,9 @@ function soakMiss(p) {
   const it = G.items.find(it => it.fire === 0 && inBox(p, it.box));
   if (!it) return false;
   // траву и землю вода не портит: мокрое просто не загорится какое-то время
-  if (it.soakFree) { G.wetBreaks = (G.wetBreaks || 0) + 1; say(it.soakMsg || `Ты полил ${it.name}. Пока мокрое, огонь сюда не пройдёт.`, 'good'); return true; }
+  if (it.soakFree) { G.wetBreaks = (G.wetBreaks || 0) + 1; say(it.soakMsg || tl('Ты полил {0}. Пока мокрое, огонь сюда не пройдёт.', it.name), 'good'); return true; }
   const d = 4 * it.value; G.dmg += d; G.soaked += d;
-  say(`Вода залила ${it.name}, а оно не горело. Мокрая вещь тоже испорчена.`, '');
+  say(tl('Вода залила {0}, а оно не горело. Мокрая вещь тоже испорчена.', it.name), '');
   return true;
 }
 
@@ -92,7 +92,7 @@ function medalsHtml(res) {
   if (!res.all.length) return '';
   return '<div class="medals">' + res.all.map(m => {
     const now = res.got.includes(m.id), ever = now || res.had.includes(m.id), isNew = res.fresh.includes(m.id);
-    const name = ever || !m.secret ? m.name : (m.hint ? `Секрет: ${m.hint}` : 'Секрет');
+    const name = ever || !m.secret ? tl(m.name) : (m.hint ? tl('Секрет: {0}', m.hint) : tl('Секрет'));
     const hinted = !ever && m.secret && m.hint;
     return `<span class="medal ${now ? 'on' : ever ? 'was' : ''} ${isNew ? 'new' : ''} ${hinted ? 'hint' : ''}"><i>${now ? '✓' : ever ? '✓' : '?'}</i>${name}</span>`;
   }).join('') + '</div>';

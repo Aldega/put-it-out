@@ -12,23 +12,23 @@ function finish(win) {
   const next = L.star ? null : LEVELS[G.li + 1];
   const P = $('panel'); P.classList.remove('ahead');
   P.innerHTML = win ? `
-    <span class="ribbon toon">Потушено!</span>
+    <span class="ribbon toon">${tl('Потушено!')}</span>
     <div class="bigstars">${STAR_CLASS(stars > 0)}${STAR_CLASS(stars > 1)}${STAR_CLASS(stars > 2)}</div>
     <div class="score toon">+${coins}</div>
-    <div class="facts">Время ${G.time.toFixed(1)} с · ущерб ${Math.round(G.dmg)}% · ошибок ${G.mistakes}</div>
+    <div class="facts">${tl('Время {0} с · ущерб {1}% · ошибок {2}', G.time.toFixed(1), Math.round(G.dmg), G.mistakes)}</div>
     ${medalsHtml(med)}
-    <div class="lesson">${L.lesson}</div>
+    <div class="lesson">${tl(L.lesson)}</div>
     <div class="prow">
-      <button class="rbtn blue" id="pMap" aria-label="Карта"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></button>
-      <button class="rbtn" id="pAgain" aria-label="Ещё раз"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M19.5 3v5h-5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      ${next ? '<button class="rbtn green" id="pNext" aria-label="Дальше"><svg viewBox="0 0 24 24"><path d="M8 4.5v15l12-7.5z" fill="#fff" stroke="#2a1a12" stroke-width="2.2" stroke-linejoin="round"/></svg></button>' : ''}
+      <button class="rbtn blue" id="pMap" aria-label="${tl('Карта')}"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></button>
+      <button class="rbtn" id="pAgain" aria-label="${tl('Ещё раз')}"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M19.5 3v5h-5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      ${next ? '<button class="rbtn green" id="pNext" aria-label="' + tl('Дальше') + '"><svg viewBox="0 0 24 24"><path d="M8 4.5v15l12-7.5z" fill="#fff" stroke="#2a1a12" stroke-width="2.2" stroke-linejoin="round"/></svg></button>' : ''}
     </div>` : `
-    <span class="ribbon toon lose">Огонь охватил комнату</span>
+    <span class="ribbon toon lose">${tl('Огонь охватил комнату')}</span>
     <div class="bigstars">${STAR(false)}${STAR(false)}${STAR(false)}</div>
-    <div class="lesson">${L.lesson}</div>
+    <div class="lesson">${tl(L.lesson)}</div>
     <div class="prow">
-      <button class="rbtn blue" id="pMap" aria-label="Карта"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></button>
-      <button class="rbtn green" id="pAgain" aria-label="Ещё раз"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M19.5 3v5h-5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="rbtn blue" id="pMap" aria-label="${tl('Карта')}"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg></button>
+      <button class="rbtn green" id="pAgain" aria-label="${tl('Ещё раз')}"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><path d="M19.5 3v5h-5" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>`;
   P.classList.toggle('tight', !!(win && med && med.all.length));
   P.querySelectorAll('.bigstars svg.on').forEach((s, i) => s.style.animationDelay = (.25 + i * .35) + 's');

@@ -46,6 +46,9 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
 .play { width: 14cqw; height: 14cqw; border-width: .6cqw; box-shadow: 0 .8cqw 0 var(--ink); animation: pulse 1.6s ease-in-out infinite; }
 @keyframes pulse { 50% { transform: scale(1.07); } }
 .tagline { font-size: 1.9cqw; font-weight: 700; color: #fff; background: rgba(42,26,18,.55); padding: .6cqw 1.6cqw; border-radius: 3cqw; }
+.langs { position: absolute; right: 2cqw; top: 1.8cqw; display: flex; gap: .3cqw; padding: .4cqw; background: var(--cream); border: .45cqw solid var(--ink); border-radius: 4cqw; box-shadow: 0 .45cqw 0 var(--ink); }
+.langbtn { font: 900 2.1cqw Rubik, sans-serif; color: var(--ink); background: transparent; border: none; border-radius: 3cqw; padding: .5cqw 1.3cqw; cursor: pointer; }
+.langbtn[aria-pressed="true"] { color: #fff; background: linear-gradient(var(--blue), var(--blue-d)); box-shadow: inset 0 0 0 .3cqw var(--ink); }
 
 /* карта уровней */
 .topbar { position: absolute; left: 2cqw; right: 2cqw; top: 1.8cqw; display: flex; align-items: center; justify-content: space-between; gap: 2cqw; pointer-events: none; }
