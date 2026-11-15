@@ -77,6 +77,7 @@ end
 local function play()
  local model,ef,cf,gf,plume,cow=scene()
  local stop=false
+ local purged=false
  local purge=0
  local shower=0
  local saved=false
@@ -172,7 +173,7 @@ local function play()
   if purge>0 then
    purge=math.max(0,purge-dt)
    fireEngine=math.max(0,fireEngine-0.4*dt)
-   if purge==0 then fireEngine=0; say("Продувка окончена. Двигатель безопасен!","good") end
+   if purge==0 then purged=true; fireEngine=0; say("Продувка окончена. Двигатель безопасен!","good") end
   end
   if shower>0 then
    shower=math.max(0,shower-dt)
@@ -206,7 +207,7 @@ local function play()
   set("FBarrier",fireGrass)
   set("Damage",damage)
   set("Pilot",saved and "out" or "inside")
-  if stop and purge==0 and fireEngine==0 and fireCable==0 and fireGrass==0 then finished(true,"Испытательный стенд спасён!") end
+  if stop and purged and fireEngine==0 and fireCable==0 and fireGrass==0 then finished(true,"Испытательный стенд спасён!") end
   if damage>=100 then finished(false,"Стенд сильно повреждён.") end
   if elapsed>=300 then finished(false,"Время вышло.") end
  end
