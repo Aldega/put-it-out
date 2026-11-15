@@ -263,11 +263,13 @@ mission.add(race);
 const lighting = new Inst('Lighting', 'Lighting', [P.float('ClockTime', 14.5), P.float('Brightness', 2.2), P.color('OutdoorAmbient', '#9a9aa6')]);
 const sss = new Inst('ServerScriptService', 'ServerScriptService');
 sss.add(new Inst('Script', 'Mission', [P.src('Source', src('server/Mission.server.lua')), P.bool('Disabled', false)]));
+sss.add(new Inst('Script', 'Rocket', [P.src('Source', src('server/Rocket.server.lua')), P.bool('Disabled', false)]));
 const rs = new Inst('ReplicatedStorage', 'ReplicatedStorage');
 rs.add(new Inst('ModuleScript', 'I18n', [P.src('Source', src('shared/I18n.lua'))]));
 const sp = new Inst('StarterPlayer', 'StarterPlayer');
 const sps = sp.add(new Inst('StarterPlayerScripts', 'StarterPlayerScripts'));
 sps.add(new Inst('LocalScript', 'HUD', [P.src('Source', src('client/HUD.client.lua')), P.bool('Disabled', false)]));
+sps.add(new Inst('LocalScript', 'MissionMenu', [P.src('Source', src('client/MissionMenu.client.lua')), P.bool('Disabled', false)]));
 
 const xml = `<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">\n` +
   [ws, lighting, sss, rs, sp].map(i => i.xml()).join('') + `</roblox>\n`;
