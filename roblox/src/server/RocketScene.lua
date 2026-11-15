@@ -223,6 +223,24 @@ local function makeStand(world)
    {shape=Enum.PartType.Cylinder,alpha=0.78}))
  end
  local flareLight=lamp(g,42,8,-8,C.blue,24,0.53)
+ -- Инженерное табло: игрок видит подтверждение команды за пределами бункера.
+ local monitorAnchor=part(g,"Телеметрия стенда",-5,20,9,1.4,0.6,1.4,C.iron,Enum.Material.Metal)
+ local board=new("BillboardGui",monitorAnchor,{
+  Name="Табло состояния",Adornee=monitorAnchor,AlwaysOnTop=true,
+  Size=UDim2.fromOffset(260,76),StudsOffset=Vector3.new(0,2.5,0),
+  MaxDistance=160,LightInfluence=0
+ })
+ local background=new("Frame",board,{
+  Size=UDim2.fromScale(1,1),BackgroundColor3=Color3.fromRGB(18,29,41),
+  BackgroundTransparency=0.08,BorderSizePixel=0
+ })
+ new("UICorner",background,{CornerRadius=UDim.new(0,8)})
+ new("UIStroke",background,{Thickness=2,Color=Color3.fromRGB(82,158,198)})
+ local monitor=new("TextLabel",background,{
+  Name="Статус",Size=UDim2.new(1,-16,1,-10),Position=UDim2.fromOffset(8,5),
+  BackgroundTransparency=1,Text="ПОДАЧА CH4 / LOX",TextColor3=Color3.fromRGB(255,197,90),
+  TextSize=15,TextWrapped=true,Font=Enum.Font.GothamBold
+ })
  -- Локальные технические прожекторы: подсвечивают фермы и насосы сбоку,
  -- вместо увеличения экспозиции всей ночной сцены.
  for _,fixture in ipairs({
@@ -255,7 +273,7 @@ local function makeStand(world)
   Size=NumberSequence.new({NumberSequenceKeypoint.new(0,0.3),NumberSequenceKeypoint.new(1,0)}),
   SpreadAngle=Vector2.new(140,140)})
  return {engine=engine,cable=cable,water=water,nitrogen=nitrogen,
-  plume=plume,glow=flareLight,sparks=sparkEmitter}
+  plume=plume,glow=flareLight,sparks=sparkEmitter,monitor=monitor}
 end
 
 local function makeIndustry(world)
@@ -486,11 +504,11 @@ function Scene.build()
  local cableFire=new("Fire",engineFX.cable,{Size=4,Heat=8})
  local grassFire=new("Fire",grass,{Enabled=false,Size=4,Heat=8})
  return {model=world,engineFire=engineFire,cableFire=cableFire,grassFire=grassFire,
-  cow=cow,plume=engineFX.plume,glow=engineFX.glow,
+  cow=cow,plume=engineFX.plume,glow=engineFX.glow,monitor=engineFX.monitor,
   sparks=engineFX.sparks,water=engineFX.water,nitrogen=engineFX.nitrogen,
   cannon=cannon,alarm=alarm,hasEngineMesh=hasEngineMesh,hasStandMesh=hasStandMesh}
 end
-function Scene.update(v,stopped,purging,deluge,cannonOn,clock)
+function Scene.update(v,stopped,purging,deluge,cannonOn,clock,saved,purged)
  -- Свечение остаётся акцентом: не выбеливает стенд и не теряет градацию по длине факела.
  for i,p in ipairs(v.plume) do
   p.Transparency=stopped and 1 or (i<=4 and 0.59+i*0.055 or 0.9)
@@ -500,6 +518,19 @@ function Scene.update(v,stopped,purging,deluge,cannonOn,clock)
  for _,e in ipairs(v.nitrogen) do e.Enabled=purging end
  for _,e in ipairs(v.water) do e.Enabled=deluge end
  v.cannon.Enabled=cannonOn
- v.alarm.Brightness=(math.floor(clock*2)%2==0) and 1.25 or 0.15
+ v.alarm.Brightness=saved and ((math.floor(clock*2)%2==0) and 1.25 or 0.15) or 0
+ if purged then
+  v.monitor.Text="N2 ГОТОВО • ДВИГАТЕЛЬ ОСТАНОВЛЕН"
+  v.monitor.TextColor3=Color3.fromRGB(118,240,166)
+ elseif purging then
+  v.monitor.Text="КЛАПАНЫ ЗАКРЫТЫ • ПРОДУВКА N2"
+  v.monitor.TextColor3=Color3.fromRGB(129,213,255)
+ elseif stopped then
+  v.monitor.Text="CH4 / LOX ПЕРЕКРЫТЫ • ЖДЁМ N2"
+  v.monitor.TextColor3=Color3.fromRGB(255,209,103)
+ else
+  v.monitor.Text="ПОДАЧА CH4 / LOX • АВАРИЯ"
+  v.monitor.TextColor3=Color3.fromRGB(255,142,110)
+ end
 end
 return Scene
