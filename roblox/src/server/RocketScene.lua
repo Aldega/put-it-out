@@ -374,11 +374,78 @@ local function makePerimeter(world)
  end
 end
 
+-- Импортируемые mesh-ассеты живут в ServerStorage.RocketAssets.
+-- Движок клонирует их на готовую сцену, а детали из Part остаются запасным вариантом.
+local ASSETS = {
+ Engine = { model = "RocketEngineAsset", center = Vector3.new(12.07364,0.45174,0.22182), width = 54.14727 },
+ Stand = { model = "RocketStandAsset", center = Vector3.new(8.40568,2.48000,1.08500), width = 73.55309 }
+}
+local ENGINE_PARTS = {
+ ["Метановый двигатель"]=true,["Кольцевой фланец"]=true,["Болт крепления"]=true,
+ ["Турбонасос"]=true,["Рёбра насоса"]=true,["Камера сгорания"]=true,
+ ["Кольцо охлаждения"]=true,["Сопло двигателя"]=true,["Срез сопла"]=true,
+ ["Красный вентиль"]=true,["Шток вентиля"]=true,["Охлаждающая трубка"]=true,
+ ["Обратная трубка"]=true,["Крепёж магистрали"]=true
+}
+local STAND_PARTS = {
+ ["Несущая колонна"]=true,["Структурная диагональ"]=true,
+ ["Продольная ферма"]=true,["Сервисный настил"]=true,
+ ["Решётчатый сегмент"]=true,["Перила"]=true,["Поручень"]=true,
+ ["Кабельная опора"]=true,["CH4 вход"]=true,["CH4 подача"]=true,
+ ["CH4 отвод"]=true,["LOX вход"]=true,["LOX подача"]=true,
+ ["LOX отвод"]=true,["N2 вход"]=true,["N2 подача"]=true,
+ ["N2 отвод"]=true
+}
+local function placeImportedArt(world, kind, standGroup)
+ local config=ASSETS[kind]
+ local storage=game:GetService("ServerStorage")
+ local root=storage:FindFirstChild("RocketAssets")
+ local source=root and root:FindFirstChild(config.model)
+ if not source or not source:IsA("Model") then return false end
+ local artwork=source:Clone()
+ artwork.Name="Imported"..kind
+ artwork.Parent=world
+ if not artwork:FindFirstChildWhichIsA("BasePart",true) then artwork:Destroy(); return false end
+ for _,item in ipairs(artwork:GetDescendants()) do
+  if item:IsA("BasePart") then
+   item.Anchored=true
+   item.CanCollide=false
+   item.CanQuery=false
+   item.CanTouch=false
+  end
+ end
+ -- Импорт в Studs предпочтителен, но дополнительная нормализация защищает от неверного масштаба.
+ local _,beforeSize=artwork:GetBoundingBox()
+ if beforeSize.X>0.01 then
+  local factor=config.width/beforeSize.X
+  if factor>=0.05 and factor<=25 then artwork:ScaleTo(artwork:GetScale()*factor) end
+ end
+ local boundingCF=artwork:GetBoundingBox()
+ local target=pos(9+config.center.X,8+config.center.Y,-8+config.center.Z)
+ artwork:TranslateBy(target-boundingCF.Position)
+ local hidden=kind=="Engine" and ENGINE_PARTS or STAND_PARTS
+ for _,obj in ipairs(standGroup:GetDescendants()) do
+  if obj:IsA("BasePart") and hidden[obj.Name] then
+   obj.Transparency=1
+   -- Коллизии декоративных деталей не должны становиться невидимыми стенами.
+   if obj.Name~="Сервисный настил" then
+    obj.CanCollide=false
+    obj.CanQuery=false
+   end
+  end
+ end
+ return true
+end
+
 function Scene.build()
  local world=group(workspace,"RocketMission")
  makePerimeter(world)
  local alarm=makeBunker(world)
  local engineFX=makeStand(world)
+ -- Встроенная геометрия останется видимой, пока готовые MeshPart-модели не импортированы.
+ local standGroup=world:FindFirstChild("C Огневой стенд")
+ local hasEngineMesh=placeImportedArt(world,"Engine",standGroup)
+ local hasStandMesh=placeImportedArt(world,"Stand",standGroup)
  makeIndustry(world)
  local grass,cow,cannon=makeSteppe(world)
  local engineFire=new("Fire",engineFX.engine,{Size=10,Heat=12})
@@ -387,7 +454,7 @@ function Scene.build()
  return {model=world,engineFire=engineFire,cableFire=cableFire,grassFire=grassFire,
   cow=cow,plume=engineFX.plume,glow=engineFX.glow,
   sparks=engineFX.sparks,water=engineFX.water,nitrogen=engineFX.nitrogen,
-  cannon=cannon,alarm=alarm}
+  cannon=cannon,alarm=alarm,hasEngineMesh=hasEngineMesh,hasStandMesh=hasStandMesh}
 end
 function Scene.update(v,stopped,purging,deluge,cannonOn,clock)
  for _,p in ipairs(v.plume) do p.Transparency=stopped and 1 or 0.25 end
