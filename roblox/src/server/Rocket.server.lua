@@ -26,7 +26,7 @@ local function part(parent,name,x,y,z,sx,sy,sz,color,material)
   Material=material or Enum.Material.SmoothPlastic})
 end
 local function button(parent,name,x,color,callback)
- local p=part(parent,name,x,5.5,-25,4,1,4,color,Enum.Material.Neon)
+ local p=part(parent,name,x,5.2,-30,4,1,3,color,Enum.Material.Neon)
  local a=create("ProximityPrompt",p,{ActionText=name,ObjectText="Пульт испытаний",MaxActivationDistance=10,HoldDuration=0.25,RequiresLineOfSight=false})
  a:SetAttribute("ActionKey",name)
  a:SetAttribute("ObjectKey","Пульт испытаний")
@@ -100,10 +100,16 @@ local function play()
   fireGrass=math.max(0,fireGrass-0.25)
   say("Лафетный ствол поливает траву: влажная полоса сдерживает огонь.","good")
  end)
- local listener=Players.PlayerAdded:Connect(function(p)
-  p.CharacterAdded:Connect(function() if State:GetAttribute("MissionId")=="rocket" then task.wait(0.2) teleport(p) end end)
- end)
- for _,p in ipairs(Players:GetPlayers()) do teleport(p) end
+ local connections={}
+ local function watchPlayer(p)
+  local c=p.CharacterAdded:Connect(function()
+   if State:GetAttribute("MissionId")=="rocket" then task.wait(0.2) teleport(p) end
+  end)
+  table.insert(connections,c)
+  teleport(p)
+ end
+ local listener=Players.PlayerAdded:Connect(watchPlayer)
+ for _,p in ipairs(Players:GetPlayers()) do watchPlayer(p) end
  set("Phase","plan")
  set("Countdown",6)
  say("На огневом стенде загорелся метановый двигатель! Управляйте испытанием из бункера.")
@@ -178,6 +184,7 @@ local function play()
  end
  task.wait(12)
  listener:Disconnect()
+ for _,connection in ipairs(connections) do connection:Disconnect() end
  Lighting.ClockTime=previousClock
  model:Destroy()
  for _,p in ipairs(Players:GetPlayers()) do task.spawn(function() p:LoadCharacter() end) end
