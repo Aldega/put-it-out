@@ -42,8 +42,24 @@ local function play()
  local visuals=RocketScene.build()
  local model=visuals.model
  local ef,cf,gf,cow=visuals.engineFire,visuals.cableFire,visuals.grassFire,visuals.cow
- local previousClock=Lighting.ClockTime
+ -- Ночной профиль света включается только на время ракетной миссии.
+ -- Яркость всей сцены снижена, контраст металла остаётся за локальными прожекторами.
+ local previousLighting={
+  ClockTime=Lighting.ClockTime,
+  Brightness=Lighting.Brightness,
+  Ambient=Lighting.Ambient,
+  OutdoorAmbient=Lighting.OutdoorAmbient,
+  ExposureCompensation=Lighting.ExposureCompensation,
+  EnvironmentDiffuseScale=Lighting.EnvironmentDiffuseScale,
+  EnvironmentSpecularScale=Lighting.EnvironmentSpecularScale
+ }
  Lighting.ClockTime=22.5
+ Lighting.Brightness=1.15
+ Lighting.Ambient=Color3.fromRGB(24,28,38)
+ Lighting.OutdoorAmbient=Color3.fromRGB(41,48,62)
+ Lighting.ExposureCompensation=-0.45
+ Lighting.EnvironmentDiffuseScale=0.35
+ Lighting.EnvironmentSpecularScale=0.28
  local stop=false
  local purged=false
  local purge=0
@@ -185,7 +201,9 @@ local function play()
  task.wait(12)
  listener:Disconnect()
  for _,connection in ipairs(connections) do connection:Disconnect() end
- Lighting.ClockTime=previousClock
+ for key,value in pairs(previousLighting) do
+  Lighting[key]=value
+ end
  model:Destroy()
  for _,p in ipairs(Players:GetPlayers()) do task.spawn(function() p:LoadCharacter() end) end
  set("MissionId","menu")
