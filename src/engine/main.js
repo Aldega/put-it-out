@@ -9,6 +9,7 @@ function frame(now) {
     for (const c of clouds) { c[0] += dt * 14 * c[2]; if (c[0] > VW + 120) c[0] = -120; cloud(ctx, c[0], c[1], c[2]); }
     if (mode === 'title') { // дымок из трубы каланчи и мигалка
       ctx.fillStyle = Math.sin(time * 8) > 0 ? '#3fa9f5' : '#e63b2e'; circ(1006, 513, 8); ctx.fill();
+      drawRescued();
     }
   } else if (G) {
     update(dt);
