@@ -274,6 +274,7 @@ const sp = new Inst('StarterPlayer', 'StarterPlayer');
 const sps = sp.add(new Inst('StarterPlayerScripts', 'StarterPlayerScripts'));
 sps.add(new Inst('LocalScript', 'HUD', [P.src('Source', src('client/HUD.client.lua')), P.bool('Disabled', false)]));
 sps.add(new Inst('LocalScript', 'MissionMenu', [P.src('Source', src('client/MissionMenu.client.lua')), P.bool('Disabled', false)]));
+sps.add(new Inst('LocalScript', 'RocketRemote', [P.src('Source', src('client/RocketRemote.client.lua')), P.bool('Disabled', false)]));
 
 const xml = `<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">\n` +
   [ws, lighting, sss, rs, serverStorage, sp].map(i => i.xml()).join('') + `</roblox>\n`;
