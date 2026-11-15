@@ -117,6 +117,7 @@ local function toolLocation()
  return nil,false
 end
 
+local feedbackUntil=0
 local function refresh()
  local rocket=State:GetAttribute("MissionId")=="rocket"
  local phase=State:GetAttribute("Phase")
@@ -141,6 +142,7 @@ local function refresh()
   rowViews[key].Text=v[1]
   rowViews[key].TextColor3=v[2]
  end
+ if os.clock()>=feedbackUntil then
  if phase=="plan" then
   message.Text="Осмотрись: запуск управления после обратного отсчёта."
   message.TextColor3=MUTED
@@ -154,6 +156,7 @@ local function refresh()
   message.Text="Двигатель погашен. Охлади кабели и проверь траву."
   message.TextColor3=GREEN
  end
+ end
 end
 launcher.Activated:Connect(function()
  local tool=toolLocation()
@@ -165,6 +168,10 @@ feedback.OnClientEvent:Connect(function(id,accepted,detail)
  if State:GetAttribute("MissionId")~="rocket" then return end
  message.Text=tostring(detail or "")
  message.TextColor3=accepted and GREEN or RED
+ feedbackUntil=os.clock()+3.5
+ task.delay(3.5,function()
+  if os.clock()>=feedbackUntil then refresh() end
+ end)
 end)
 local watched={
  "MissionId","Phase","RocketStopped","RocketPurged",
