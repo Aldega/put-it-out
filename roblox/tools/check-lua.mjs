@@ -7,7 +7,10 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const luaparse = require(process.env.LUAPARSE || 'luaparse');
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
-const FILES = ['server/Mission.server.lua', 'client/HUD.client.lua', 'shared/I18n.lua'];
+const FILES = ['server/Mission.server.lua', 'server/Rocket.server.lua', 'server/RocketScene.lua', 'client/HUD.client.lua', 'client/MissionMenu.client.lua', 'shared/I18n.lua'];
+// Сценические русские имена и пока не локализованные тексты новых миссий проверяем только на синтаксис.
+// Старые пользовательские строки продолжаем проверять на наличие en/es переводов.
+const TRANSLATION_FILES = new Set(['server/Mission.server.lua', 'client/HUD.client.lua']);
 const KNOWN = new Set(('game workspace script Instance Vector3 Vector2 CFrame Color3 UDim UDim2 Enum task math string table os ' +
   'pairs ipairs next type typeof tostring tonumber print warn error require setmetatable getmetatable pcall select unpack ' +
   'NumberSequence NumberSequenceKeypoint NumberRange ColorSequence ColorSequenceKeypoint RaycastParams TweenInfo utf8').split(' '));
@@ -20,7 +23,7 @@ for (const f of FILES) {
   try { ast = luaparse.parse(code, { scope: true, luaVersion: '5.1', encodingMode: 'pseudo-latin1', locations: true }); }
   catch (e) { console.log(`${f}: ОШИБКА СИНТАКСИСА ${e.message}`); bad++; continue; }
   for (const g of ast.globals) if (!KNOWN.has(g.name)) { console.log(`${f}: неизвестное глобальное имя «${g.name}»`); bad++; }
-  if (f.includes('I18n')) continue;
+  if (!TRANSLATION_FILES.has(f)) continue;
   // строки с кириллицей = ключи перевода
   const walk = n => {
     if (!n || typeof n !== 'object') return;
