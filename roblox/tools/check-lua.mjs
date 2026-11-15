@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const luaparse = require(process.env.LUAPARSE || 'luaparse');
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'src');
-const FILES = ['server/Mission.server.lua', 'server/Rocket.server.lua', 'server/RocketScene.lua', 'client/HUD.client.lua', 'client/MissionMenu.client.lua', 'shared/I18n.lua'];
+const FILES = ['server/Mission.server.lua', 'server/Rocket.server.lua', 'server/RocketScene.lua', 'client/HUD.client.lua', 'client/MissionMenu.client.lua', 'client/RocketRemote.client.lua', 'shared/I18n.lua'];
 // Сценические русские имена и пока не локализованные тексты новых миссий проверяем только на синтаксис.
 // Старые пользовательские строки продолжаем проверять на наличие en/es переводов.
 const TRANSLATION_FILES = new Set(['server/Mission.server.lua', 'client/HUD.client.lua']);
