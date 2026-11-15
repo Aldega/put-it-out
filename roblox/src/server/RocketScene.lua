@@ -53,8 +53,8 @@ local function sign(parent,text,x,y,z,sx,sy,bg)
  return plate
 end
 local function lamp(parent,x,y,z,color,range,power)
- local housing=part(parent,"Промышленный светильник",x,y,z,2.3,1,2.3,color,Enum.Material.Neon)
- local source=new("PointLight",housing,{Color=color,Range=range or 25,Brightness=power or 1.4,Shadows=false})
+ local housing=part(parent,"Промышленный светильник",x,y,z,2.3,1,2.3,C.iron,Enum.Material.Metal)
+ local source=new("PointLight",housing,{Color=color,Range=range or 19,Brightness=power or 0.65,Shadows=false})
  return source
 end
 local function particles(partParent,name,kind)
@@ -219,10 +219,10 @@ local function makeStand(world)
    {shape=Enum.PartType.Cylinder,alpha=0.18+i*0.07}))
  end
  for x=47,68,7 do
-  table.insert(plume,part(g,"Скачок уплотнения",x,8,-8,0.55,4.5,4.5,C.white,Enum.Material.Neon,
-   {shape=Enum.PartType.Cylinder,alpha=0.42}))
+  table.insert(plume,part(g,"Скачок уплотнения",x,8,-8,0.55,4.5,4.5,Color3.fromRGB(150,198,238),Enum.Material.Neon,
+   {shape=Enum.PartType.Cylinder,alpha=0.78}))
  end
- local flareLight=lamp(g,42,8,-8,C.blue,35,2.3)
+ local flareLight=lamp(g,42,8,-8,C.blue,27,0.85)
  local nitrogen={}
  for _,pt in ipairs({{35,9,-8},{7,12,-10},{-2,10,-16}}) do
   local emitterBase=part(g,"Сопло продувки",pt[1],pt[2],pt[3],0.5,0.5,0.5,C.yellow)
@@ -354,7 +354,14 @@ local function makePerimeter(world)
   local z=81+(i%2)*7
   part(g,"Сухой кустарник",x,1,z,2,2,2,C.grass,Enum.Material.Grass)
  end
- for _,pt in ipairs({{-105,-70},{-5,-76},{93,-65},{100,66}}) do
+ -- Прожекторы направлены локально, а не все в одну точку;
+ -- суженный световой конус сохраняет тени и не выжигает детали стенда.
+ for _,pt in ipairs({
+  {-105,-70,-65,-28},
+  {-5,-76,13,-8},
+  {93,-65,55,-16},
+  {100,66,74,17}
+ }) do
   local x=pt[1]; local z=pt[2]
   solid(g,"Бетонное основание прожектора",x,0.7,z,5,1.4,5)
   beam(g,"Мачта прожектора",{x,1,z},{x,29,z},1.1,C.iron)
@@ -362,10 +369,16 @@ local function makePerimeter(world)
    beam(g,"Растяжка",{x-2,h,z},{x+2,h+5,z},0.3,C.steel)
   end
   part(g,"Поперечная балка",x,29,z,9,0.8,0.7,C.iron)
-  for dx=-3,3,3 do
-   local spot=part(g,"Головка прожектора",x+dx,28.6,z,2.5,1.5,1.8,C.white,Enum.Material.Neon)
-   spot.CFrame=CFrame.lookAt(spot.Position,pos(0,1,0))
-   new("SpotLight",spot,{Face=Enum.NormalId.Front,Angle=105,Range=130,Brightness=3,Color=Color3.fromRGB(255,223,178),Shadows=false})
+  for _,dx in ipairs({-2.3,2.3}) do
+   local spot=part(g,"Головка прожектора",x+dx,28.6,z,2.5,1.5,1.8,C.iron,Enum.Material.Metal)
+   spot.CFrame=CFrame.lookAt(spot.Position,pos(pt[3]+dx,1,pt[4]))
+   local lens=part(g,"Матовая линза прожектора",x+dx,28.6,z,1.8,1.0,0.12,
+    Color3.fromRGB(210,198,169),Enum.Material.Glass,{alpha=0.15})
+   lens.CFrame=spot.CFrame*CFrame.new(0,0,-0.98)
+   new("SpotLight",spot,{
+    Face=Enum.NormalId.Front,Angle=46,Range=75,Brightness=0.65,
+    Color=Color3.fromRGB(255,215,171),Shadows=false
+   })
   end
  end
  for _,p in ipairs({{-95,-52},{-40,67},{52,54},{100,-41}}) do
@@ -458,11 +471,11 @@ function Scene.build()
 end
 function Scene.update(v,stopped,purging,deluge,cannonOn,clock)
  for _,p in ipairs(v.plume) do p.Transparency=stopped and 1 or 0.25 end
- v.glow.Brightness=stopped and 0 or 2.3+0.2*math.sin(clock*10)
+ v.glow.Brightness=stopped and 0 or 0.85+0.07*math.sin(clock*10)
  v.sparks.Enabled=not stopped
  for _,e in ipairs(v.nitrogen) do e.Enabled=purging end
  for _,e in ipairs(v.water) do e.Enabled=deluge end
  v.cannon.Enabled=cannonOn
- v.alarm.Brightness=(math.floor(clock*2)%2==0) and 3 or 0.4
+ v.alarm.Brightness=(math.floor(clock*2)%2==0) and 1.25 or 0.15
 end
 return Scene
