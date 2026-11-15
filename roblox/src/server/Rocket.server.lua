@@ -54,12 +54,12 @@ local function play()
   EnvironmentSpecularScale=Lighting.EnvironmentSpecularScale
  }
  Lighting.ClockTime=22.5
- Lighting.Brightness=1.15
- Lighting.Ambient=Color3.fromRGB(24,28,38)
- Lighting.OutdoorAmbient=Color3.fromRGB(41,48,62)
- Lighting.ExposureCompensation=-0.45
- Lighting.EnvironmentDiffuseScale=0.35
- Lighting.EnvironmentSpecularScale=0.28
+ Lighting.Brightness=1.30
+ Lighting.Ambient=Color3.fromRGB(42,48,61)
+ Lighting.OutdoorAmbient=Color3.fromRGB(61,69,84)
+ Lighting.ExposureCompensation=-0.23
+ Lighting.EnvironmentDiffuseScale=0.52
+ Lighting.EnvironmentSpecularScale=0.36
  local stop=false
  local purged=false
  local purge=0
