@@ -13,15 +13,18 @@ local function create(class,parent,props)
  x.Parent=parent
  return x
 end
+local RocketScene = require(script.Parent:WaitForChild("RocketScene"))
+local Lighting = game:GetService("Lighting")
 local origin=Vector3.new(0,0,440)
 local function pos(x,y,z) return origin+Vector3.new(x,y,z) end
-local function part(parent,name,x,y,z,sx,sy,sz,color,material)
- return create("Part",parent,{Name=name,Anchored=true,Position=pos(x,y,z),Size=Vector3.new(sx,sy,sz),Color=color,Material=material or Enum.Material.SmoothPlastic})
-end
 local CY=Color3.fromRGB(255,210,63)
 local RED=Color3.fromRGB(230,59,46)
 local BLUE=Color3.fromRGB(63,169,245)
-local STEEL=Color3.fromRGB(180,187,203)
+local function part(parent,name,x,y,z,sx,sy,sz,color,material)
+ return create("Part",parent,{Name=name,Anchored=true,CanCollide=false,CanQuery=false,
+  Position=pos(x,y,z),Size=Vector3.new(sx,sy,sz),Color=color,
+  Material=material or Enum.Material.SmoothPlastic})
+end
 local function button(parent,name,x,color,callback)
  local p=part(parent,name,x,5.5,-25,4,1,4,color,Enum.Material.Neon)
  local a=create("ProximityPrompt",p,{ActionText=name,ObjectText="Пульт испытаний",MaxActivationDistance=10,HoldDuration=0.25,RequiresLineOfSight=false})
@@ -30,58 +33,17 @@ local function button(parent,name,x,color,callback)
  a.Triggered:Connect(callback)
  return p
 end
-local function scene()
- local m=create("Model",workspace,{Name="RocketMission"})
- part(m,"Сухая степь",0,-1,0,230,2,200,Color3.fromRGB(105,88,55),Enum.Material.Ground)
- part(m,"Бетонный полигон",-12,0.1,-8,130,0.2,110,Color3.fromRGB(125,132,146),Enum.Material.Concrete)
- part(m,"Защитный бункер",-62,7,-39,36,14,4,STEEL,Enum.Material.Concrete)
- part(m,"Стенка",-80,6,-24,3,12,28,STEEL,Enum.Material.Concrete)
- part(m,"Стенка",-44,6,-24,3,12,28,STEEL,Enum.Material.Concrete)
- part(m,"Крыша",-62,13,-24,38,2,31,STEEL,Enum.Material.Concrete)
- -- Передняя стенка с реальным проходом шириной 5 studs.
- -- Раньше здесь было цельное коллизионное стекло, запиравшее игроков.
- local leftGlass=part(m,"Левое бронестекло",-71,7,-11,13,8,0.3,BLUE,Enum.Material.Glass)
- leftGlass.Transparency=0.6
- local rightGlass=part(m,"Правое бронестекло",-53,7,-11,13,8,0.3,BLUE,Enum.Material.Glass)
- rightGlass.Transparency=0.6
- local exit=part(m,"Выход из бункера",-62,10.5,-11,5,1,0.4,CY,Enum.Material.Neon)
- exit.CanCollide=false
- part(m,"Пульт управления",-62,2.5,-25,32,5,10,Color3.fromRGB(46,52,69))
- local block=part(m,"Упор", -10,8,-6,5,16,22,STEEL,Enum.Material.Concrete)
- part(m,"Топливная линия",0,15,-8,2,19,2,Color3.fromRGB(255,157,31),Enum.Material.Metal)
- part(m,"Кислородная линия",5,15,-8,2,19,2,BLUE,Enum.Material.Metal)
- local core=part(m,"Метановый двигатель",9,8,-8,17,8,9,STEEL,Enum.Material.Metal)
- local nozzle=part(m,"Сопло",24,8,-8,13,11,11,Color3.fromRGB(40,44,55),Enum.Material.Metal)
- nozzle.Shape=Enum.PartType.Cylinder
- local plume=part(m,"Реактивный факел",45,8,-8,30,6,6,Color3.fromRGB(133,171,255),Enum.Material.Neon)
- plume.Shape=Enum.PartType.Cylinder
- plume.CanCollide=false
- local cable=part(m,"Кабельный лоток",7,1.2,1,30,2,5,CY)
- local grass=part(m,"Сухая трава",75,1,-8,30,2,36,Color3.fromRGB(187,158,70),Enum.Material.Grass)
- local cow=create("Model",m,{Name="Корова"})
- part(cow,"Туловище",86,4,25,10,6,5,Color3.fromRGB(245,245,235))
- part(cow,"Голова",91,5,25,4,4,4,Color3.fromRGB(245,245,235))
- for _,x in ipairs({82,89}) do
-  for _,z in ipairs({23,27}) do
-   part(cow,"Нога",x,1,z,1.4,3,1.4,Color3.fromRGB(40,40,40))
-  end
- end
- for i=1,4 do
-  local tank=part(m,"Баллон азота",-16+i*3,4,9,2,8,2,Color3.fromRGB(40,42,47),Enum.Material.Metal)
-  tank.Shape=Enum.PartType.Cylinder
- end
- local ef=create("Fire",core,{Size=11,Heat=14})
- local cf=create("Fire",cable,{Size=5,Heat=10})
- local gf=create("Fire",grass,{Size=8,Heat=10,Enabled=false})
- return m,ef,cf,gf,plume,cow
-end
 local function teleport(p)
  local char=p.Character
  if not char then return end
  char:PivotTo(CFrame.new(pos(-62,5,-16)))
 end
 local function play()
- local model,ef,cf,gf,plume,cow=scene()
+ local visuals=RocketScene.build()
+ local model=visuals.model
+ local ef,cf,gf,cow=visuals.engineFire,visuals.cableFire,visuals.grassFire,visuals.cow
+ local previousClock=Lighting.ClockTime
+ Lighting.ClockTime=22.5
  local stop=false
  local purged=false
  local purge=0
@@ -131,7 +93,6 @@ local function play()
   say("Сирена включена! Корова убежала в безопасное место.","good")
  end)
  -- Лафет установлен снаружи, но запускается из безопасного бункера.
- part(model,"Лафетный ствол",46,3,18,5,6,8,BLUE,Enum.Material.Metal)
  button(model,"Полить траву",-48,BLUE,function()
   if done then return end
   action()
@@ -197,7 +158,7 @@ local function play()
    cow:PivotTo(cow:GetPivot()+Vector3.new(40,0,30))
    say("Огонь добрался до коровы! Она убежала сама.","bad")
   end
-  plume.Transparency=stop and 1 or 0.2
+  RocketScene.update(visuals,stop,purge>0,shower>0,wetGrass>0,elapsed)
   ef.Enabled=fireEngine>0.02
   cf.Enabled=fireCable>0.02
   gf.Enabled=fireGrass>0.02
@@ -217,6 +178,7 @@ local function play()
  end
  task.wait(12)
  listener:Disconnect()
+ Lighting.ClockTime=previousClock
  model:Destroy()
  for _,p in ipairs(Players:GetPlayers()) do task.spawn(function() p:LoadCharacter() end) end
  set("MissionId","menu")
