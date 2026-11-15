@@ -87,7 +87,8 @@ for i,item in ipairs(rows) do
  rowViews[item.id]=status
  button.Activated:Connect(function()
   if State:GetAttribute("MissionId")~="rocket" then return end
-  if State:GetAttribute("Phase")~="play" then return end
+  -- Даже до начала раунда запрос проходит к серверу: игрок получит сообщение,
+  -- почему команда пока недоступна, вместо молчаливого отсутствия реакции.
   control:FireServer(item.id)
  end)
 end
