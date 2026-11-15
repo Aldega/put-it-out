@@ -289,7 +289,7 @@ local function makeSteppe(world)
  part(cow,"Голова",92.6,6.4,26,4.3,3.5,3.6,C.white)
  part(cow,"Морда",95,5.7,26,2,1.9,3.2,Color3.fromRGB(244,172,184))
  for _,z in ipairs({24.6,27.4}) do
-  part(cow,"Глаз",94.2,7.05,z,0.55,0.55,0.55,C.black,{ },{shape=Enum.PartType.Ball})
+  part(cow,"Глаз",94.2,7.05,z,0.55,0.55,0.55,C.black,Enum.Material.SmoothPlastic,{shape=Enum.PartType.Ball})
  end
  for _,x in ipairs({82.5,89.5}) do
   for _,z in ipairs({24.3,27.7}) do
