@@ -13,6 +13,77 @@ local function create(class,parent,props)
  x.Parent=parent
  return x
 end
+
+-- Пять команд пульта регистрируются только на сервере.
+local ControlEv=Remotes:FindFirstChild("RocketControl") or create("RemoteEvent",Remotes,{Name="RocketControl"})
+local FeedbackEv=Remotes:FindFirstChild("RocketFeedback") or create("RemoteEvent",Remotes,{Name="RocketFeedback"})
+
+-- Физическое устройство, которое Roblox держит в руке через стандартную Tool.Grip.
+-- Кнопки на корпусе декоративные; нажимаются крупные кнопки на экране (в том числе с телефона).
+local function newRemoteTool()
+ local tool=create("Tool",nil,{Name="RocketRemote",ToolTip="Пульт управления огневым стендом",
+  RequiresHandle=true,CanBeDropped=false,Grip=CFrame.new(0,-0.13,-0.22)*CFrame.Angles(math.rad(-20),0,math.rad(90))})
+ local handle=create("Part",tool,{
+  Name="Handle",Size=Vector3.new(0.9,0.20,0.65),Material=Enum.Material.Metal,
+  Color=Color3.fromRGB(35,43,54),Anchored=false,CanCollide=false,CanTouch=false,Massless=true
+ })
+ local function decoration(name,x,y,z,sx,sy,sz,color,material)
+  local p=create("Part",tool,{
+   Name=name,Size=Vector3.new(sx,sy,sz),Material=material or Enum.Material.SmoothPlastic,
+   Color=color,Anchored=false,CanCollide=false,CanTouch=false,Massless=true,
+   CFrame=handle.CFrame*CFrame.new(x,y,z)
+  })
+  create("WeldConstraint",handle,{Part0=handle,Part1=p})
+  return p
+ end
+ local screen=decoration("Экран телеметрии",0,0.13,-0.12,0.72,0.04,0.33,
+  Color3.fromRGB(15,31,37),Enum.Material.SmoothPlastic)
+ local screenGui=create("SurfaceGui",screen,{
+  Name="Дисплей",Face=Enum.NormalId.Top,PixelsPerStud=120,LightInfluence=0
+ })
+ create("TextLabel",screenGui,{
+  Size=UDim2.fromScale(1,1),BackgroundTransparency=1,
+  Font=Enum.Font.GothamBold,TextScaled=true,Text="TEST / REMOTE",
+  TextColor3=Color3.fromRGB(83,236,196)
+ })
+ local colors={
+  Color3.fromRGB(239,75,60),Color3.fromRGB(251,196,67),
+  Color3.fromRGB(63,163,233),Color3.fromRGB(64,158,240),
+  Color3.fromRGB(247,193,75)
+ }
+ for i,c in ipairs(colors) do
+  local x=-0.3+(i-1)*0.15
+  decoration("Кнопка "..i,x,0.145,0.205,0.105,0.06,0.14,c,Enum.Material.SmoothPlastic)
+ end
+ decoration("Антенна",0.34,0.10,-0.37,0.05,0.24,0.06,Color3.fromRGB(180,193,207),Enum.Material.Metal)
+ return tool
+end
+local function ownsTool(player)
+ local character=player.Character
+ local backpack=player:FindFirstChildOfClass("Backpack")
+ return (character and character:FindFirstChild("RocketRemote"))
+  or (backpack and backpack:FindFirstChild("RocketRemote"))
+end
+local function giveTool(player)
+ if State:GetAttribute("MissionId")~="rocket" then return end
+ if ownsTool(player) then return end
+ local backpack=player:FindFirstChildOfClass("Backpack")
+ local character=player.Character
+ if not backpack or not character then return end
+ local humanoid=character:FindFirstChildOfClass("Humanoid")
+ if not humanoid or humanoid.Health<=0 then return end
+ local tool=newRemoteTool()
+ tool.Parent=backpack
+ humanoid:EquipTool(tool)
+end
+local function removeTool(player)
+ for _,owner in ipairs({player.Character,player:FindFirstChildOfClass("Backpack")}) do
+  if owner then
+   local old=owner:FindFirstChild("RocketRemote")
+   if old and old:IsA("Tool") then old:Destroy() end
+  end
+ end
+end
 local RocketScene = require(script.Parent:WaitForChild("RocketScene"))
 local Lighting = game:GetService("Lighting")
 local origin=Vector3.new(0,0,440)
@@ -77,52 +148,99 @@ local function play()
  local done=false
  local firstAction=nil
  local function action() if not firstAction then firstAction=elapsed end end
- button(model,"Аварийный стоп",-73,RED,function()
-  if done or stop then return end
+ local function publishRemoteStatus()
+  set("RocketStopped",stop)
+  set("RocketPurging",purge>0)
+  set("RocketPurged",purged)
+  set("RocketDeluge",shower>0)
+  set("RocketCannon",wetGrass>0)
+  set("RocketSiren",saved)
+ end
+ local controls={}
+ controls.stop=function()
+  if stop then return false,"Клапаны уже перекрыты." end
   action()
   stop=true
   fireEngine=math.min(fireEngine,0.45)
-  say("Аварийный стоп! Клапаны метана и кислорода закрыты. Теперь продуй двигатель азотом.","good")
- end)
- button(model,"Продувка азотом",-66,CY,function()
-  if done or purge>0 then return end
+  return true,"Аварийный стоп: CH4 и LOX перекрыты. Запусти продувку азотом."
+ end
+ controls.nitrogen=function()
+  if purged then return false,"Азотная продувка уже завершена." end
+  if purge>0 then return false,"Продувка уже выполняется." end
   action()
   if not stop then
    early=true
-   say("Азот не пробьётся, пока двигатель работает. Сначала аварийный стоп!","bad")
-   return
+   return false,"Сначала нажми СТОП! Азот нельзя подавать при работающем двигателе.","bad"
   end
   purge=3
-  say("Азот вытесняет остатки метана и кислорода из двигателя.","good")
- end)
- button(model,"Водяной душ",-59,BLUE,function()
-  if done then return end
+  return true,"Продувка N2 активна: вытесняем остатки горючего и окислителя."
+ end
+ controls.deluge=function()
+  if shower>0 then return false,"Водяная рампа уже работает." end
   action()
   shower=6
-  say("Водяной душ охлаждает кабели и стенд, но не перекрывает поток газа.","good")
- end)
- button(model,"Включить сирену",-52,RED,function()
-  if done or saved then return end
-  action()
-  saved=true
-  cow:PivotTo(cow:GetPivot()+Vector3.new(40,0,30))
-  say("Сирена включена! Корова убежала в безопасное место.","good")
- end)
- -- Лафет установлен снаружи, но запускается из безопасного бункера.
- button(model,"Полить траву",-48,BLUE,function()
-  if done then return end
+  return true,"Водяной душ включён: охлаждаем кабели и стенд."
+ end
+ controls.cannon=function()
+  if wetGrass>0 then return false,"Лафетный ствол уже поливает траву." end
   action()
   wetGrass=8
   fireGrass=math.max(0,fireGrass-0.25)
-  say("Лафетный ствол поливает траву: влажная полоса сдерживает огонь.","good")
+  return true,"Лафет работает: полоса сухой травы увлажнена."
+ end
+ controls.siren=function()
+  if saved then return false,"Сирена уже включена, корова в безопасности." end
+  if lost then return false,"Корова уже убежала от огня. Спасти её сиреной поздно." end
+  action()
+  saved=true
+  cow:PivotTo(cow:GetPivot()+Vector3.new(40,0,30))
+  return true,"Сирена включена: корова ушла из опасной зоны."
+ end
+ local function executeControl(player,id,remote)
+  if typeof(id)~="string" or controls[id]==nil then return end
+  if State:GetAttribute("MissionId")~="rocket" or State:GetAttribute("Phase")~="play" or done then
+   if player then FeedbackEv:FireClient(player,id,false,"Управление доступно после начала испытания.") end
+   return
+  end
+  if remote then
+   local character=player.Character
+   local held=character and character:FindFirstChild("RocketRemote")
+   if not held or not held:IsA("Tool") then
+    FeedbackEv:FireClient(player,id,false,"Возьми переносной пульт в руку.")
+    return
+   end
+  end
+  local ok,text,kind=controls[id]()
+  publishRemoteStatus()
+  if player then FeedbackEv:FireClient(player,id,ok,text) end
+  if ok then
+   say(text,"good")
+  elseif kind=="bad" then
+   say(text,"bad")
+  end
+ end
+ publishRemoteStatus()
+ button(model,"Аварийный стоп",-73,RED,function(player) executeControl(player,"stop",false) end)
+ button(model,"Продувка азотом",-66,CY,function(player) executeControl(player,"nitrogen",false) end)
+ button(model,"Водяной душ",-59,BLUE,function(player) executeControl(player,"deluge",false) end)
+ button(model,"Включить сирену",-52,RED,function(player) executeControl(player,"siren",false) end)
+ -- Стационарный пульт сохраняется как резервный способ управления.
+ button(model,"Полить траву",-48,BLUE,function(player) executeControl(player,"cannon",false) end)
+ local remoteConnection=ControlEv.OnServerEvent:Connect(function(player,id)
+  executeControl(player,id,true)
  end)
  local connections={}
  local function watchPlayer(p)
   local c=p.CharacterAdded:Connect(function()
-   if State:GetAttribute("MissionId")=="rocket" then task.wait(0.2) teleport(p) end
+   task.wait(0.25)
+   if State:GetAttribute("MissionId")=="rocket" and not done then
+    teleport(p)
+    giveTool(p)
+   end
   end)
   table.insert(connections,c)
   teleport(p)
+  giveTool(p)
  end
  local listener=Players.PlayerAdded:Connect(watchPlayer)
  for _,p in ipairs(Players:GetPlayers()) do watchPlayer(p) end
@@ -174,6 +292,7 @@ local function play()
   elseif not stop then
    fireGrass=math.min(1,fireGrass+fireEngine*0.025*dt)
   end
+  publishRemoteStatus()
   if fireGrass>0.08 then grassBurned=true end
   if fireGrass>0.6 and not saved and not lost then
    lost=true
@@ -199,13 +318,23 @@ local function play()
   if elapsed>=300 then finished(false,"Время вышло.") end
  end
  task.wait(12)
+ remoteConnection:Disconnect()
  listener:Disconnect()
  for _,connection in ipairs(connections) do connection:Disconnect() end
  for key,value in pairs(previousLighting) do
   Lighting[key]=value
  end
  model:Destroy()
- for _,p in ipairs(Players:GetPlayers()) do task.spawn(function() p:LoadCharacter() end) end
+ for _,p in ipairs(Players:GetPlayers()) do
+  removeTool(p)
+  task.spawn(function() p:LoadCharacter() end)
+ end
+ set("RocketStopped",false)
+ set("RocketPurged",false)
+ set("RocketPurging",false)
+ set("RocketDeluge",false)
+ set("RocketCannon",false)
+ set("RocketSiren",false)
  set("MissionId","menu")
  set("Phase","menu")
 end
