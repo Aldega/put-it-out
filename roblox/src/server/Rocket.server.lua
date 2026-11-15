@@ -38,8 +38,14 @@ local function scene()
  part(m,"Стенка",-80,6,-24,3,12,28,STEEL,Enum.Material.Concrete)
  part(m,"Стенка",-44,6,-24,3,12,28,STEEL,Enum.Material.Concrete)
  part(m,"Крыша",-62,13,-24,38,2,31,STEEL,Enum.Material.Concrete)
- local glass=part(m,"Бронестекло",-62,7,-11,31,8,0.3,BLUE,Enum.Material.Glass)
- glass.Transparency=0.6
+ -- Передняя стенка с реальным проходом шириной 5 studs.
+ -- Раньше здесь было цельное коллизионное стекло, запиравшее игроков.
+ local leftGlass=part(m,"Левое бронестекло",-71,7,-11,13,8,0.3,BLUE,Enum.Material.Glass)
+ leftGlass.Transparency=0.6
+ local rightGlass=part(m,"Правое бронестекло",-53,7,-11,13,8,0.3,BLUE,Enum.Material.Glass)
+ rightGlass.Transparency=0.6
+ local exit=part(m,"Выход из бункера",-62,10.5,-11,5,1,0.4,CY,Enum.Material.Neon)
+ exit.CanCollide=false
  part(m,"Пульт управления",-62,2.5,-25,32,5,10,Color3.fromRGB(46,52,69))
  local block=part(m,"Упор", -10,8,-6,5,16,22,STEEL,Enum.Material.Concrete)
  part(m,"Топливная линия",0,15,-8,2,19,2,Color3.fromRGB(255,157,31),Enum.Material.Metal)
@@ -72,7 +78,7 @@ end
 local function teleport(p)
  local char=p.Character
  if not char then return end
- char:PivotTo(CFrame.new(pos(-62,4,-20)))
+ char:PivotTo(CFrame.new(pos(-62,5,-16)))
 end
 local function play()
  local model,ef,cf,gf,plume,cow=scene()
