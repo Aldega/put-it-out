@@ -277,11 +277,16 @@ RunService.RenderStepped:Connect(function(dt)
 	-- строка сверху
 	local ph = State:GetAttribute("Phase") or "wait"
 	local cd = State:GetAttribute("Countdown") or 0
+	local rocket = State:GetAttribute("MissionId") == "rocket"
+	local inMenu = State:GetAttribute("MissionId") == "menu"
+	banner.Visible = not inMenu
+	panel.Visible = not inMenu
+	if inMenu then result.Visible = false end
 	if ph == "plan" then
 		bannerText.Text = T("Осмотрись и составь план: {0}", { cd })
 		result.Visible = false
 	elseif ph == "play" then
-		bannerText.Text = T("Авария Ф-1 · {0}", { fmtTime(State:GetAttribute("Time")) })
+		bannerText.Text = T(rocket and "Огненное сопло · {0}" or "Авария Ф-1 · {0}", { fmtTime(State:GetAttribute("Time")) })
 	elseif ph == "result" then
 		bannerText.Text = T("Следующая миссия через {0}", { cd })
 	else
@@ -296,12 +301,21 @@ RunService.RenderStepped:Connect(function(dt)
 	setBar(rDamage, (State:GetAttribute("Damage") or 0) / 100)
 	local ps = State:GetAttribute("Pilot") or "inside"
 	local pilotTexts = { inside = "Пилот: в кокпите", out = "Пилот: спасён", fled = "Пилот: убежал сам" }
-	pilotLine.Text = T(pilotTexts[ps] or "")
-	raceLine.Text = T(State:GetAttribute("Red") and "Гонка: красный флаг" or "Гонка: идёт")
+	pilotLine.Text = rocket and "СТОП → АЗОТ" or T(pilotTexts[ps] or "")
+	raceLine.Text = rocket and "Пульт в бункере" or T(State:GetAttribute("Red") and "Гонка: красный флаг" or "Гонка: идёт")
 	local lampText = "Лампа: красная"
 	if State:GetAttribute("Safe") then lampText = "Лампа: зелёная"
 	elseif State:GetAttribute("Draining") then lampText = "Лампа: мигает" end
-	lampLine.Text = T(lampText)
+	lampLine.Text = rocket and "Сирена спасает корову" or T(lampText)
+	if rocket then
+		rEngine.name.Text = "Двигатель"
+		rSpill.name.Text = "Кабели"
+		rBarrier.name.Text = "Трава"
+	else
+		rEngine.name.Text = T("Болид")
+		rSpill.name.Text = T("Топливо")
+		rBarrier.name.Text = T("Шинный барьер")
+	end
 
 	-- заряд
 	if currentTool and currentTool.Parent == player.Character then
