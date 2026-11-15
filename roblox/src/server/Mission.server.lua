@@ -46,6 +46,7 @@ local Remotes = new("Folder", { Name = "FireRemotes" }, RS)
 local SayEv = new("RemoteEvent", { Name = "Say" }, Remotes)
 local SprayEv = new("RemoteEvent", { Name = "Spray" }, Remotes)
 local ResultEv = new("RemoteEvent", { Name = "Result" }, Remotes)
+local SelectEv = new("RemoteEvent", { Name = "SelectMission" }, Remotes)
 local State = new("Folder", { Name = "MissionState" }, RS)
 local function setS(k, v) State:SetAttribute(k, v) end
 
@@ -835,24 +836,33 @@ local function countdown(name, secs)
 	setS("Countdown", 0)
 end
 
-setS("Phase", "wait")
+-- Выбор миссии общесерверный и проверяется на сервере.
+setS("MissionId", "menu")
+setS("Phase", "menu")
+SelectEv.OnServerEvent:Connect(function(player, id)
+ if State:GetAttribute("MissionId") ~= "menu" then return end
+ if id ~= "f1" and id ~= "rocket" then return end
+ setS("MissionId", id)
+ if id == "f1" then phase = "wait" end
+end)
 
 task.spawn(function()
-	local first = true
-	while true do
-		if #Players:GetPlayers() == 0 then Players.PlayerAdded:Wait() end
-		if first then task.wait(2) end
-		setupRound()
-		say("Болид вылетел с трассы и врезался в шинный барьер! Мотор горит, из бака течёт топливо, а пилот ещё в кокпите. По трассе всё ещё несутся болиды.", "")
-		countdown("plan", first and CFG.planTime + 4 or CFG.planTime)
-		first = false
-		phase = "play"
-		setS("Phase", "play")
-		say("Вперёд! Действуйте вместе.", "good")
-		while phase == "play" do task.wait(0.25) end
-		countdown("result", CFG.resultTime)
-		clearRound()
-		for _, plr in ipairs(Players:GetPlayers()) do task.spawn(function() plr:LoadCharacter() end) end
-		countdown("wait", CFG.waitTime)
-	end
+ local first = true
+ while true do
+  while State:GetAttribute("MissionId") ~= "f1" do task.wait(0.25) end
+  if #Players:GetPlayers() == 0 then Players.PlayerAdded:Wait() end
+  setupRound()
+  say("Болид вылетел с трассы и врезался в шинный барьер! Мотор горит, из бака течёт топливо, а пилот ещё в кокпите. По трассе всё ещё несутся болиды.", "")
+  countdown("plan", first and CFG.planTime + 4 or CFG.planTime)
+  first = false
+  phase = "play"
+  setS("Phase", "play")
+  say("Вперёд! Действуйте вместе.", "good")
+  while phase == "play" do task.wait(0.25) end
+  countdown("result", CFG.resultTime)
+  clearRound()
+  for _, plr in ipairs(Players:GetPlayers()) do task.spawn(function() plr:LoadCharacter() end) end
+  setS("MissionId", "menu")
+  setS("Phase", "menu")
+ end
 end)
