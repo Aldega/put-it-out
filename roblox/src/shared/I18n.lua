@@ -3,6 +3,13 @@
 local I18n = {}
 
 I18n.en = {
+	["СТОП → АЗОТ"] = "STOP → NITROGEN",
+	["Пульт в бункере"] = "Bunker control panel",
+	["Сирена спасает корову"] = "Siren saves the cow",
+	["Двигатель"] = "Engine",
+	["Кабели"] = "Cables",
+	["Трава"] = "Grass",
+	["Огненное сопло · {0}"] = "Fiery nozzle · {0}",
 	["Водяной огнетушитель"] = "Water extinguisher",
 	["Порошковый огнетушитель"] = "Powder extinguisher",
 	["Пенный огнетушитель AFFF"] = "AFFF foam extinguisher",
@@ -86,6 +93,13 @@ I18n.en = {
 }
 
 I18n.es = {
+	["СТОП → АЗОТ"] = "PARADA → NITRÓGENO",
+	["Пульт в бункере"] = "Panel de control del búnker",
+	["Сирена спасает корову"] = "La sirena salva a la vaca",
+	["Двигатель"] = "Motor",
+	["Кабели"] = "Cables",
+	["Трава"] = "Hierba",
+	["Огненное сопло · {0}"] = "Tobera en llamas · {0}",
 	["Водяной огнетушитель"] = "Extintor de agua",
 	["Порошковый огнетушитель"] = "Extintor de polvo",
 	["Пенный огнетушитель AFFF"] = "Extintor de espuma AFFF",
