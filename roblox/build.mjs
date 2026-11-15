@@ -263,6 +263,7 @@ mission.add(race);
 const lighting = new Inst('Lighting', 'Lighting', [P.float('ClockTime', 14.5), P.float('Brightness', 2.2), P.color('OutdoorAmbient', '#9a9aa6')]);
 const sss = new Inst('ServerScriptService', 'ServerScriptService');
 sss.add(new Inst('Script', 'Mission', [P.src('Source', src('server/Mission.server.lua')), P.bool('Disabled', false)]));
+sss.add(new Inst('ModuleScript', 'RocketScene', [P.src('Source', src('server/RocketScene.lua'))]));
 sss.add(new Inst('Script', 'Rocket', [P.src('Source', src('server/Rocket.server.lua')), P.bool('Disabled', false)]));
 const rs = new Inst('ReplicatedStorage', 'ReplicatedStorage');
 rs.add(new Inst('ModuleScript', 'I18n', [P.src('Source', src('shared/I18n.lua'))]));
