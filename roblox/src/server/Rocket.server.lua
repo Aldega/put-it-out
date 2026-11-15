@@ -299,7 +299,7 @@ local function play()
    cow:PivotTo(cow:GetPivot()+Vector3.new(40,0,30))
    say("Огонь добрался до коровы! Она убежала сама.","bad")
   end
-  RocketScene.update(visuals,stop,purge>0,shower>0,wetGrass>0,elapsed)
+  RocketScene.update(visuals,stop,purge>0,shower>0,wetGrass>0,elapsed,saved,purged)
   ef.Enabled=fireEngine>0.02
   cf.Enabled=fireCable>0.02
   gf.Enabled=fireGrass>0.02
