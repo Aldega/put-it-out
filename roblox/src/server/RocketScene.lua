@@ -212,7 +212,7 @@ local function makeStand(world)
  end
  -- Факел по оси X; отдельные сегменты исчезают после STOP.
  local plume={}
- local cols={C.blue,C.violet,C.purple,Color3.fromRGB(242,200,253)}
+ local cols={Color3.fromRGB(58,155,230),C.violet,C.purple,Color3.fromRGB(117,81,188)}
  for i=1,4 do
   table.insert(plume,part(g,"Струя - сегмент "..i,42+(i-1)*10.2,8,-8,
    7+i*2,8.2-i*1.3,8.2-i*1.3,cols[i],Enum.Material.Neon,
@@ -222,7 +222,28 @@ local function makeStand(world)
   table.insert(plume,part(g,"Скачок уплотнения",x,8,-8,0.55,4.5,4.5,Color3.fromRGB(150,198,238),Enum.Material.Neon,
    {shape=Enum.PartType.Cylinder,alpha=0.78}))
  end
- local flareLight=lamp(g,42,8,-8,C.blue,27,0.85)
+ local flareLight=lamp(g,42,8,-8,C.blue,24,0.53)
+ -- Локальные технические прожекторы: подсвечивают фермы и насосы сбоку,
+ -- вместо увеличения экспозиции всей ночной сцены.
+ for _,fixture in ipairs({
+  {-12,20,18, -3,7,-8},
+  {14,20,21, 10,8,-8},
+  {34,19,-29, 23,8,-8},
+  {-24,18,-26, -6,8,-8}
+ }) do
+  local x,y,z,tx,ty,tz=table.unpack(fixture)
+  local lampBody=part(g,"Светильник обслуживания стенда",x,y,z,2.4,1.4,2.4,C.iron,Enum.Material.Metal)
+  lampBody.CFrame=CFrame.lookAt(lampBody.Position,pos(tx,ty,tz))
+  new("SpotLight",lampBody,{
+   Face=Enum.NormalId.Front,Angle=78,Range=43,Brightness=1.05,
+   Color=Color3.fromRGB(226,235,255),Shadows=false
+  })
+ end
+ -- Мягкая локальная подсветка рабочей дорожки не даёт персонажу исчезнуть в темноте.
+ local footlight=part(g,"Свет на техническом проходе",-19,3,10,1.2,0.5,1.2,C.iron)
+ new("PointLight",footlight,{
+  Range=24,Brightness=0.42,Color=Color3.fromRGB(233,214,188),Shadows=false
+ })
  local nitrogen={}
  for _,pt in ipairs({{35,9,-8},{7,12,-10},{-2,10,-16}}) do
   local emitterBase=part(g,"Сопло продувки",pt[1],pt[2],pt[3],0.5,0.5,0.5,C.yellow)
@@ -470,8 +491,11 @@ function Scene.build()
   cannon=cannon,alarm=alarm,hasEngineMesh=hasEngineMesh,hasStandMesh=hasStandMesh}
 end
 function Scene.update(v,stopped,purging,deluge,cannonOn,clock)
- for _,p in ipairs(v.plume) do p.Transparency=stopped and 1 or 0.25 end
- v.glow.Brightness=stopped and 0 or 0.85+0.07*math.sin(clock*10)
+ -- Свечение остаётся акцентом: не выбеливает стенд и не теряет градацию по длине факела.
+ for i,p in ipairs(v.plume) do
+  p.Transparency=stopped and 1 or (i<=4 and 0.59+i*0.055 or 0.9)
+ end
+ v.glow.Brightness=stopped and 0 or 0.53+0.04*math.sin(clock*10)
  v.sparks.Enabled=not stopped
  for _,e in ipairs(v.nitrogen) do e.Enabled=purging end
  for _,e in ipairs(v.water) do e.Enabled=deluge end
